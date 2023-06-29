@@ -38,7 +38,7 @@ def generarLadrillos(cantidad,listaPowerUP):
     ladAzul = ld.Ladrillo(BLUE,ancho,0, 1, 1)
     #Genera los ladrillos
     for i in range(cantidad):
-        lad = rn.randrange(0,4)
+        lad =rn.randrange(0,4)
         if ancho + ladRojo.rect.width + SEPARACION_LADRILLOS  > ANCHO:
             ancho = 20
             alto += ladRojo.rect.height + 20    
@@ -50,7 +50,7 @@ def generarLadrillos(cantidad,listaPowerUP):
             todos.add([ladVerde])
         elif lad==3:
             num = rn.randrange(0,len(listaPowerUP))
-            ladVioleta = ld.ladrillo_p(PURPLE,ancho,alto, 3,2,POWER_FUERZA)
+            ladVioleta = ld.ladrillo_p(PURPLE,ancho,alto, 3,2,listaPowerUP[num])
             todos.add([ladVioleta])
         else:
             ladAzul = ld.Ladrillo(BLUE,ancho,alto, 3,3)
@@ -94,7 +94,11 @@ def gano(jugando):
 
 def romperLadrillo(ladrillo,pelota):
     ladrillo.resistencia -= pelota.fuerza
+    if ladrillo.resistencia <= pelota.fuerza: # 3 3
+        ladrillo.resistencia = 0
     if ladrillo.resistencia <= 0:
+
+    
         pantalla.blit(BACKGROUND, ladrillo.rect, ladrillo.rect)
         todos.remove(ladrillo)
         return ladrillo.puntos
@@ -113,7 +117,7 @@ pygame.init()
 
 gameFont = pygame.freetype.SysFont('roboto', 16, bold=False, italic=False)
 
-listaPowerUP= [POWER_FUERZA,POWER_LARGE]
+listaPowerUP= [POWER_FUERZA,POWER_LARGE] 
 
 romper_sin_reobte = False
 todos  = pygame.sprite.Group()
@@ -166,19 +170,24 @@ while jugando:
         #porque aveces la pelota se come un pedazo de la paleta
         pantalla.blit(BACKGROUND, j.rect, j.rect)
         pantalla.blit(j.image, j.rect)
+        print(p.fuerza)
     #Rebote de la pelota con los ladrillos o paredes.
     listaLadrillos = pygame.sprite.spritecollide(p, todos, False)
     if listaLadrillos:
         ladrillo = listaLadrillos[0]
-        
-        
-        if romper_sin_reobte:
-            puntos = romperLadrillo(listaLadrillos[0],p)
-            time.sleep(20)
-            romper_sin_reobte = False
+    
+        if p.fuerza > 1:
+            p.fuerza-= ladrillo.resistencia
+            puntos = romperLadrillo(ladrillo,p)    
+            if p.fuerza <= 0:
+                p.fuerza = 1
+            pantalla.blit(BACKGROUND, p.rect, p.rect)
+            p.update(ANCHO,ALTO)
+            pantalla.blit(p.image, p.rect)
         else:
-            puntos = romperLadrillo(listaLadrillos[0],p)
-            if p.rect.centerx <= ladrillo.rect.left or p.rect.centerx >= ladrillo.rect.right:
+            puntos = romperLadrillo(ladrillo,p)
+            #si pelota fuerza == 1
+            if p.rect.right <= ladrillo.rect.left or p.rect.left >= ladrillo.rect.right:
                 pantalla.blit(BACKGROUND, p.rect, p.rect)
                 p.update(ANCHO,ALTO,False,True)
                 pantalla.blit(p.image, p.rect)
@@ -189,9 +198,6 @@ while jugando:
         
         
         if puntos > 0:
-            pantalla.blit(BACKGROUND, p.rect, p.rect)
-            p.update(ANCHO,ALTO,True)
-            pantalla.blit(p.image, p.rect)
             sumarPuntaje(puntos)
             if isinstance(ladrillo, ld.ladrillo_p):
                 grupoPowerUp.add({powerup.powerUp(ladrillo.rect.x, ladrillo.rect.y, ladrillo.powerUp)})

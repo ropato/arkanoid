@@ -1,6 +1,6 @@
 import pygame
 import threading
-
+FUERZA_POWERUP = 30
 class Pelota(pygame.sprite.Sprite):
     def __init__(self,x,y):
         super().__init__()
@@ -23,5 +23,5 @@ class Pelota(pygame.sprite.Sprite):
         self.rect.y += self.velocidadV
         
     def masFuerza(self):
-        self.fuerza = 100
+        self.fuerza = FUERZA_POWERUP 
 
