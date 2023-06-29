@@ -38,7 +38,7 @@ def generarLadrillos(cantidad,listaPowerUP):
     ladAzul = ld.Ladrillo(BLUE,ancho,0, 1, 1)
     #Genera los ladrillos
     for i in range(cantidad):
-        lad =3 #rn.randrange(0,4)
+        lad = rn.randrange(0,4)
         if ancho + ladRojo.rect.width + SEPARACION_LADRILLOS  > ANCHO:
             ancho = 20
             alto += ladRojo.rect.height + 20    
