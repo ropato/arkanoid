@@ -119,7 +119,6 @@ gameFont = pygame.freetype.SysFont('roboto', 16, bold=False, italic=False)
 
 listaPowerUP= [POWER_FUERZA,POWER_LARGE] 
 
-romper_sin_reobte = False
 todos  = pygame.sprite.Group()
 
 grupoPelota = pygame.sprite.Group()
@@ -216,7 +215,6 @@ while jugando:
             pantalla.blit(j.image, j.rect)
         elif powerUpColisioned[0].powerUp == POWER_FUERZA:
             p.masFuerza()
-            romper_sin_reobte =True
 
     
     #Color de fondo de la pantalla
