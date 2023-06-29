@@ -1,7 +1,7 @@
 import pygame
 import jugador
 import pelota as t
-import ladrillo
+import ladrillo as ld
 import pygame.freetype #Libreria que usamos para escribir en pantalla
 import time #Sirve para determinar los FPS del juego
 import sys #
@@ -11,7 +11,7 @@ import powerup
 ANCHO = 1280 
 ALTO = 720
 PUNTAJE = 0
-
+POWER_LARGE = 'M'
 pantalla = pygame.display.set_mode((ANCHO,ALTO)) #inicializo la pantalla
 
 SEPARACION_LADRILLOS =10 
@@ -30,9 +30,9 @@ def generarLadrillos(cantidad):
     ancho = 20
     alto = 0
     
-    ladRojo = ladrillo.Ladrillo(RED,ancho,0, 1, 1)
-    ladVerde = ladrillo.Ladrillo(GREEN,ancho,0, 2, 2)
-    ladAzul = ladrillo.Ladrillo(BLUE,ancho,0, 1, 1)
+    ladRojo = ld.Ladrillo(RED,ancho,0, 1, 1)
+    ladVerde = ld.Ladrillo(GREEN,ancho,0, 2, 2)
+    ladAzul = ld.Ladrillo(BLUE,ancho,0, 1, 1)
     #Genera los ladrillos
     for i in range(cantidad):
         lad = rn.randrange(0,4)
@@ -40,18 +40,17 @@ def generarLadrillos(cantidad):
             ancho = 20
             alto += ladRojo.rect.height + 20    
         if lad == 1:
-            ladRojo = ladrillo.Ladrillo(RED,ancho,alto, 1,1)
+            ladRojo = ld.Ladrillo(RED,ancho,alto, 1,1)
             todos.add([ladRojo])
         elif lad == 2:
-            ladVerde = ladrillo.Ladrillo(GREEN,ancho,alto, 2,2)
+            ladVerde = ld.Ladrillo(GREEN,ancho,alto, 2,2)
             todos.add([ladVerde])
         elif lad==3:
-            ladPU=powerup.powerup(ancho,alto)
-            ladVerde = ladrillo.ladrillo_p(PURPLE,ancho,alto, 2,2,ladPU)
-            todos.add(ladPU)
-            todos.add([ladVerde])
+            
+            ladVioleta = ld.ladrillo_p(PURPLE,ancho,alto, 1,2,POWER_LARGE)
+            todos.add([ladVioleta])
         else:
-            ladAzul = ladrillo.Ladrillo(BLUE,ancho,alto, 3,3)
+            ladAzul = ld.Ladrillo(BLUE,ancho,alto, 3,3)
             todos.add([ladAzul])
         ancho += ladRojo.rect.width + SEPARACION_LADRILLOS
 
@@ -123,7 +122,7 @@ grupoPelota.add([p])
 grupoJugador = pygame.sprite.Group()
 j = jugador.Jugador(ANCHO /2,ALTO -50)
 grupoJugador.add([j])
-
+grupoPowerUp = pygame.sprite.Group()
 reloj = pygame.time.Clock()
 vidas = 3
 generarLadrillos(30)
@@ -176,16 +175,29 @@ while jugando:
             pantalla.blit(BACKGROUND, p.rect, p.rect)
             p.update(ANCHO,ALTO,True)
             pantalla.blit(p.image, p.rect)
-
+        
         puntos = romperLadrillo(listaLadrillos[0])
         if puntos > 0:
             pantalla.blit(BACKGROUND, p.rect, p.rect)
             p.update(ANCHO,ALTO,True)
             pantalla.blit(p.image, p.rect)
             sumarPuntaje(puntos)
+            if isinstance(ladrillo, ld.ladrillo_p):
+                grupoPowerUp.add({powerup.powerUp(ladrillo.rect.x, ladrillo.rect.y, ladrillo.powerUp)})
         #Si el centerx de la pelota es mas chico que la parte izquierda del ladrillo o mas grande que la parte derecha del ladrillo, es un rebote horizontal
+    if grupoPowerUp:
+        for power in grupoPowerUp:
+            pantalla.blit(BACKGROUND, power.rect, power.rect)
+            power.fallDown()    
+            pantalla.blit(power.image, power.rect)
+    powerUpColisioned = pygame.sprite.spritecollide(j, grupoPowerUp, True)
+    if powerUpColisioned:
+        pantalla.blit(BACKGROUND, powerUpColisioned[0], powerUpColisioned[0])
+        if powerUpColisioned[0].powerUp == POWER_LARGE:
+            pantalla.blit(BACKGROUND, j.rect, j.rect)
+            j.getBig()
+            pantalla.blit(j.image, j.rect)
         
-            
         
 
     

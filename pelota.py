@@ -7,7 +7,7 @@ class Pelota(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
-        self.velocidadH = 10
+        self.velocidadH = 5
         self.velocidadV = 5
 
     def update(self,limX,limY,choquevertical = False, choqueHorizontal = False):
