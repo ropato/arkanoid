@@ -11,7 +11,7 @@ import powerup
 ANCHO = 1280 
 ALTO = 720
 PUNTAJE = 0
-
+#Tupla = Letra que identifica a cada power up y su imagen
 POWER_LARGE = 'M',"resources/imgLarge.png"
 POWER_FUERZA = "F","resources/imgFuerza.png"
 POWER_SMALL = "S","resources/imgSmall.png"
@@ -35,7 +35,7 @@ def generarLadrillos(cantidad,listaPowerUP):
     ladrilloAux = ld.Ladrillo(WHITE,0,0,0,0)
     #Genera los ladrillos
     for i in range(cantidad):
-        lad =3#rn.randrange(0,4)
+        lad =rn.randrange(0,4)
         if ancho + ladrilloAux.getAnchoLadrillo() + SEPARACION_LADRILLOS  > ANCHO:
             ancho = 20
             alto += ladrilloAux.rect.height + 20    
@@ -47,7 +47,7 @@ def generarLadrillos(cantidad,listaPowerUP):
             todos.add([ladVerde])
         elif lad==3:
             num = rn.randrange(0,len(listaPowerUP))
-            ladVioleta = ld.ladrillo_p(PURPLE,ancho,alto, 1,2,listaPowerUP[num][0],listaPowerUP[num][1])
+            ladVioleta = ld.ladrillo_p(PURPLE,ancho,alto, 3,2,listaPowerUP[num][0],listaPowerUP[num][1])
             todos.add([ladVioleta])
         else:
             ladAzul = ld.Ladrillo(BLUE,ancho,alto, 3,3)
