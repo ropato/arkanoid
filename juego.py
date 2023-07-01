@@ -15,6 +15,7 @@ PUNTAJE = 0
 
 POWER_LARGE = 'M'
 POWER_FUERZA = "F"
+POWER_SMALL = "S"
 pantalla = pygame.display.set_mode((ANCHO,ALTO)) #inicializo la pantalla
 
 SEPARACION_LADRILLOS =10 
@@ -50,7 +51,7 @@ def generarLadrillos(cantidad,listaPowerUP):
             todos.add([ladVerde])
         elif lad==3:
             num = rn.randrange(0,len(listaPowerUP))
-            ladVioleta = ld.ladrillo_p(PURPLE,ancho,alto, 3,2,listaPowerUP[num])
+            ladVioleta = ld.ladrillo_p(PURPLE,ancho,alto, 1,2,listaPowerUP[num])
             todos.add([ladVioleta])
         else:
             ladAzul = ld.Ladrillo(BLUE,ancho,alto, 3,3)
@@ -117,7 +118,7 @@ pygame.init()
 
 gameFont = pygame.freetype.SysFont('roboto', 16, bold=False, italic=False)
 
-listaPowerUP= [POWER_FUERZA,POWER_LARGE] 
+listaPowerUP= [POWER_FUERZA,POWER_LARGE,POWER_SMALL] 
 
 todos  = pygame.sprite.Group()
 
@@ -169,7 +170,6 @@ while jugando:
         #porque aveces la pelota se come un pedazo de la paleta
         pantalla.blit(BACKGROUND, j.rect, j.rect)
         pantalla.blit(j.image, j.rect)
-        print(p.fuerza)
     #Rebote de la pelota con los ladrillos o paredes.
     listaLadrillos = pygame.sprite.spritecollide(p, todos, False)
     if listaLadrillos:
@@ -215,6 +215,10 @@ while jugando:
             pantalla.blit(j.image, j.rect)
         elif powerUpColisioned[0].powerUp == POWER_FUERZA:
             p.masFuerza()
+        elif powerUpColisioned[0].powerUp == POWER_SMALL:
+            pantalla.blit(BACKGROUND, j.rect, j.rect)
+            j.getSmall()
+            pantalla.blit(j.image, j.rect)
 
     
     #Color de fondo de la pantalla
