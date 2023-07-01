@@ -7,7 +7,6 @@ import time #Sirve para determinar los FPS del juego
 import sys #
 import random as rn #generar numeros al azar
 import powerup
-import threading
 #Info del juego y Pantalla
 ANCHO = 1280 
 ALTO = 720
@@ -28,19 +27,16 @@ BLUE = (0,0,255)
 PURPLE=(148,0,211)
 
 BACKGROUND = pygame.image.load('resources/bg1.jpg').convert()
-PELOTA_SPRITE = pygame.image.load("pelota.png").convert()
+
 
 def generarLadrillos(cantidad,listaPowerUP): 
     ancho = 20
-    alto = 0
-    
-    ladRojo = ld.Ladrillo(RED,ancho,0, 1, 1)
-    ladVerde = ld.Ladrillo(GREEN,ancho,0, 2, 2)
-    ladAzul = ld.Ladrillo(BLUE,ancho,0, 1, 1)
+    alto = 0   
+    ladrilloAux = ld.Ladrillo(WHITE,0,0,0,0)
     #Genera los ladrillos
     for i in range(cantidad):
         lad =rn.randrange(0,4)
-        if ancho + ladRojo.rect.width + SEPARACION_LADRILLOS  > ANCHO:
+        if ancho + ladrilloAux.getAnchoLadrillo() + SEPARACION_LADRILLOS  > ANCHO:
             ancho = 20
             alto += ladRojo.rect.height + 20    
         if lad == 1:
@@ -56,7 +52,9 @@ def generarLadrillos(cantidad,listaPowerUP):
         else:
             ladAzul = ld.Ladrillo(BLUE,ancho,alto, 3,3)
             todos.add([ladAzul])
-        ancho += ladRojo.rect.width + SEPARACION_LADRILLOS
+        ancho += ladrilloAux.getAnchoLadrillo() + SEPARACION_LADRILLOS
+    
+    del ladrilloAux #Solamente sevia para te
 
 def sumarPuntaje(puntos):
     global PUNTAJE
@@ -88,7 +86,7 @@ def perdio():
     pantalla.blit(texto,texto_rect)
     pygame.display.flip()
     time.sleep(3)
-    sys.exit()
+    sys.exit
 
 def gano(jugando):
     pass
@@ -113,7 +111,6 @@ pygame.init()
     #Otros ladrillos <--
     #Mostrar Tiempo
     #Pantalla de inicio
-    #Pantalla de fin
     #Opcional Distintos niveles
 
 gameFont = pygame.freetype.SysFont('roboto', 16, bold=False, italic=False)
