@@ -17,9 +17,10 @@ class Ladrillo(pygame.sprite.Sprite):
 
     
 class ladrillo_p(Ladrillo):
-    def __init__(self, color, posX, posY, resistencia, puntos, powerUp):
+    def __init__(self, color, posX, posY, resistencia, puntos, powerUp,imgPU):
         super().__init__(color, posX, posY, resistencia, puntos)
         self.powerUp=powerUp
+        self.imagenPU = imgPU
 
     
 

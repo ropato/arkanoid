@@ -12,9 +12,9 @@ ANCHO = 1280
 ALTO = 720
 PUNTAJE = 0
 
-POWER_LARGE = 'M'
-POWER_FUERZA = "F"
-POWER_SMALL = "S"
+POWER_LARGE = 'M',"resources/imgLarge.png"
+POWER_FUERZA = "F","resources/imgFuerza.png"
+POWER_SMALL = "S","resources/imgSmall.png"
 pantalla = pygame.display.set_mode((ANCHO,ALTO)) #inicializo la pantalla
 
 SEPARACION_LADRILLOS =10 
@@ -35,10 +35,10 @@ def generarLadrillos(cantidad,listaPowerUP):
     ladrilloAux = ld.Ladrillo(WHITE,0,0,0,0)
     #Genera los ladrillos
     for i in range(cantidad):
-        lad =rn.randrange(0,4)
+        lad =3#rn.randrange(0,4)
         if ancho + ladrilloAux.getAnchoLadrillo() + SEPARACION_LADRILLOS  > ANCHO:
             ancho = 20
-            alto += ladRojo.rect.height + 20    
+            alto += ladrilloAux.rect.height + 20    
         if lad == 1:
             ladRojo = ld.Ladrillo(RED,ancho,alto, 1,1)
             todos.add([ladRojo])
@@ -47,7 +47,7 @@ def generarLadrillos(cantidad,listaPowerUP):
             todos.add([ladVerde])
         elif lad==3:
             num = rn.randrange(0,len(listaPowerUP))
-            ladVioleta = ld.ladrillo_p(PURPLE,ancho,alto, 3,2,listaPowerUP[num])
+            ladVioleta = ld.ladrillo_p(PURPLE,ancho,alto, 1,2,listaPowerUP[num][0],listaPowerUP[num][1])
             todos.add([ladVioleta])
         else:
             ladAzul = ld.Ladrillo(BLUE,ancho,alto, 3,3)
@@ -196,8 +196,8 @@ while jugando:
         if puntos > 0:
             sumarPuntaje(puntos)
             if isinstance(ladrillo, ld.ladrillo_p):
-                grupoPowerUp.add({powerup.powerUp(ladrillo.rect.x, ladrillo.rect.y, ladrillo.powerUp)})
-        #Si el centerx de la pelota es mas chico que la parte izquierda del ladrillo o mas grande que la parte derecha del ladrillo, es un rebote horizontal
+                grupoPowerUp.add([powerup.powerUp(ladrillo.rect.x, ladrillo.rect.y, ladrillo.powerUp,ladrillo.imagenPU)])
+      
     if grupoPowerUp:
         for power in grupoPowerUp:
             pantalla.blit(BACKGROUND, power.rect, power.rect)
@@ -206,13 +206,13 @@ while jugando:
     powerUpColisioned = pygame.sprite.spritecollide(j, grupoPowerUp, True)
     if powerUpColisioned:
         pantalla.blit(BACKGROUND, powerUpColisioned[0], powerUpColisioned[0])
-        if powerUpColisioned[0].powerUp == POWER_LARGE:
+        if powerUpColisioned[0].powerUp == POWER_LARGE[0]:
             pantalla.blit(BACKGROUND, j.rect, j.rect)
             j.getBig()
             pantalla.blit(j.image, j.rect)
-        elif powerUpColisioned[0].powerUp == POWER_FUERZA:
+        elif powerUpColisioned[0].powerUp == POWER_FUERZA[0]:
             p.masFuerza()
-        elif powerUpColisioned[0].powerUp == POWER_SMALL:
+        elif powerUpColisioned[0].powerUp == POWER_SMALL[0]:
             pantalla.blit(BACKGROUND, j.rect, j.rect)
             j.getSmall()
             pantalla.blit(j.image, j.rect)
