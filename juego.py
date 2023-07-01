@@ -51,7 +51,7 @@ def generarLadrillos(cantidad,listaPowerUP):
             todos.add([ladVerde])
         elif lad==3:
             num = rn.randrange(0,len(listaPowerUP))
-            ladVioleta = ld.ladrillo_p(PURPLE,ancho,alto, 1,2,listaPowerUP[num])
+            ladVioleta = ld.ladrillo_p(PURPLE,ancho,alto, 3,2,listaPowerUP[num])
             todos.add([ladVioleta])
         else:
             ladAzul = ld.Ladrillo(BLUE,ancho,alto, 3,3)
@@ -79,15 +79,15 @@ def saque():
     p.rect.midbottom = j.rect.midtop
     pantalla.blit(p.image, p.rect) 
 
-def perdio(jugando):
-    fuente = pygame.font.Font(None,72)
-    texto = fuente.render(f"GAME OVER",(0,0,0),(0,0,0))
+def perdio():
+    fuente = pygame.font.Font(None, 72)
+    texto = fuente.render("GAME OVER", True, WHITE)
     texto_rect = texto.get_rect()
     texto_rect.center = [ANCHO / 2  , ALTO / 2]
+    pantalla.blit(BACKGROUND,(0,0))
     pantalla.blit(texto,texto_rect)
     pygame.display.flip()
     time.sleep(3)
-    jugando = False
     sys.exit()
 
 def gano(jugando):
@@ -252,7 +252,7 @@ while jugando:
             saque()
         else:
             pantalla.fill((255,255,255))
-            perdio(jugando)
+            perdio()
     
     
     reloj.tick(60)
