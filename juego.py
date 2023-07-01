@@ -61,12 +61,12 @@ def sumarPuntaje(puntos):
     PUNTAJE += puntos
 
 def dibujarPuntaje():
-    text_surface, rect = gameFont.render("Puntaje: " + str(PUNTAJE), (0, 0, 0))
+    text_surface, rect = gameFont.render("Puntaje: " + str(PUNTAJE), WHITE)
     #pantalla.blit(text_surface, ( 0, ALTO / 1.15), ( 0, ALTO / 1.15))
     pantalla.blit(text_surface, ( 0, ALTO / 1.15))
 
 def dibujarVidas():
-    text_surface, rect = gameFont.render("Vidas: " + str(vidas), (0, 0, 0))
+    text_surface, rect = gameFont.render("Vidas: " + str(vidas), WHITE)
     #pantalla.blit(text_surface, ( 0, ALTO / 1.05), ( 0, ALTO / 1.05))
     pantalla.blit(text_surface, ( 0, ALTO / 1.05))
 
@@ -86,7 +86,7 @@ def perdio():
     pantalla.blit(texto,texto_rect)
     pygame.display.flip()
     time.sleep(3)
-    sys.exit
+    sys.exit()
 
 def gano(jugando):
     pass
@@ -113,7 +113,7 @@ pygame.init()
     #Pantalla de inicio
     #Opcional Distintos niveles
 
-gameFont = pygame.freetype.SysFont('roboto', 16, bold=False, italic=False)
+gameFont = pygame.freetype.SysFont('roboto', 20, bold=False, italic=False)
 
 listaPowerUP= [POWER_FUERZA,POWER_LARGE,POWER_SMALL] 
 
@@ -125,7 +125,7 @@ pantalla.blit(BACKGROUND, p.rect, p.rect)
 grupoPelota.add([p])
 
 grupoJugador = pygame.sprite.Group()
-j = jugador.Jugador(ANCHO /2,ALTO -50)
+j = jugador.Jugador((ANCHO /2),ALTO -50)
 grupoJugador.add([j])
 grupoPowerUp = pygame.sprite.Group()
 reloj = pygame.time.Clock()

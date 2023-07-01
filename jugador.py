@@ -8,7 +8,7 @@ class Jugador(pygame.sprite.Sprite):
         super().__init__()
         self.image = pygame.image.load("resources/jugador.png")
         self.rect = self.image.get_rect()
-        self.rect.x = x
+        self.rect.x = x - self.rect.width/2
         self.rect.y = y
         self.ANCHO_INICIAL = self.rect.width
         
