@@ -12,6 +12,10 @@ class Ladrillo(pygame.sprite.Sprite):
         self.resistencia = resistencia
         self.puntos = puntos
         
+    def getAnchoLadrillo(self):
+        return self.rect.width
+
+    
 class ladrillo_p(Ladrillo):
     def __init__(self, color, posX, posY, resistencia, puntos, powerUp):
         super().__init__(color, posX, posY, resistencia, puntos)
