@@ -10,14 +10,19 @@ import powerup
 #Info del juego y Pantalla
 ANCHO = 1280 
 ALTO = 720
-PUNTAJE = 0
+SCORE = 0
 #Tupla = Letra que identifica a cada power up y su imagen
 POWER_LARGE = 'M',"resources/imgLarge.png"
 POWER_FUERZA = "F","resources/imgFuerza.png"
 POWER_SMALL = "S","resources/imgSmall.png"
-pantalla = pygame.display.set_mode((ANCHO,ALTO)) #inicializo la pantalla
 
+SCR = pygame.display.set_mode((ANCHO,ALTO)) #inicializo la pantalla
+
+BRICK_AMOUNT = 100
 SEPARACION_LADRILLOS =10 
+
+
+POWERU_UP_LIST= [POWER_FUERZA,POWER_LARGE,POWER_SMALL]
 
 BLACK = ( 0, 0, 0)
 WHITE = (255, 255, 255)
@@ -29,230 +34,239 @@ PURPLE=(148,0,211)
 BACKGROUND = pygame.image.load('resources/bg1.jpg').convert()
 
 
-def generarLadrillos(cantidad,listaPowerUP): 
-    ancho = 20
-    alto = 0   
-    ladrilloAux = ld.Ladrillo(WHITE,0,0,0,0)
+def createBricks(amount,powerUps): 
+    posWidth = 20
+    posHeight = 0   
+    bricks = []
     #Genera los ladrillos
-    for i in range(cantidad):
-        lad =rn.randrange(0,4)
-        if ancho + ladrilloAux.getAnchoLadrillo() + SEPARACION_LADRILLOS  > ANCHO:
-            ancho = 20
-            alto += ladrilloAux.rect.height + 20    
-        if lad == 1:
-            ladRojo = ld.Ladrillo(RED,ancho,alto, 1,1)
-            todos.add([ladRojo])
-        elif lad == 2:
-            ladVerde = ld.Ladrillo(GREEN,ancho,alto, 2,2)
-            todos.add([ladVerde])
-        elif lad==3:
-            num = rn.randrange(0,len(listaPowerUP))
-            ladVioleta = ld.ladrillo_p(PURPLE,ancho,alto, 3,2,listaPowerUP[num][0],listaPowerUP[num][1])
-            todos.add([ladVioleta])
+    for i in range(amount):
+        brickType =rn.randrange(0,4)
+        if posWidth + ld.BRICK_SIZE[0] + SEPARACION_LADRILLOS  > ANCHO:
+            posWidth = 20
+            posHeight += ld.BRICK_SIZE[1] + 20    
+        if brickType == 1:
+            redBrick = ld.Ladrillo(RED,posWidth,posHeight, 1,1)
+            brickGroup.add([redBrick])
+            del redBrick
+        elif brickType == 2:
+            greenBrick = ld.Ladrillo(GREEN,posWidth,posHeight, 2,2)
+            brickGroup.add([greenBrick])
+            del greenBrick
+        elif brickType==3:
+            num = rn.randrange(0,len(powerUps))
+            violetBrick = ld.ladrillo_p(PURPLE,posWidth,posHeight, 3,2,powerUps[num][0],powerUps[num][1])
+            brickGroup.add([violetBrick])
+            del violetBrick
+            del num
         else:
-            ladAzul = ld.Ladrillo(BLUE,ancho,alto, 3,3)
-            todos.add([ladAzul])
-        ancho += ladrilloAux.getAnchoLadrillo() + SEPARACION_LADRILLOS
+            blueBrick = ld.Ladrillo(BLUE,posWidth,posHeight, 3,3)
+            brickGroup.add([blueBrick])
+            del blueBrick
+        posWidth += ld.BRICK_SIZE[0] + SEPARACION_LADRILLOS
+    return bricks
+
+def addScore(pts):
+    global SCORE
+    SCORE += pts
+
+def drawScore():
+    text_surface, rect = GAME_FONT.render("Puntaje: " + str(SCORE), WHITE)
+    rect.x = 0
+    rect.y = ALTO / 1.15
+    SCR.blit(BACKGROUND, rect, rect)
+    SCR.blit(text_surface, rect)
+
+def drawLives():
+    text_surface, rect = GAME_FONT.render("Vidas: " + str(lives), WHITE)
+    rect.x = 0
+    rect.y = ALTO / 1.05
+    SCR.blit(BACKGROUND, rect, rect)
+    SCR.blit(text_surface, rect, )
+
+def serve():
+    global ball
+    global player
+    SCR.blit(BACKGROUND, ball.rect, ball.rect) 
+    ball.rect.midbottom = player.rect.midtop
+    SCR.blit(ball.image, ball.rect) 
+
+def gameOver():
+    text_surface, rect = GAME_FONT.render("GAME OVER", WHITE, size = 100)
+    rect.centerx = ANCHO / 2
+    rect.centery = ALTO / 2
+    SCR.blit(text_surface, rect, )
     
-    del ladrilloAux #Solamente sevia para te
-
-def sumarPuntaje(puntos):
-    global PUNTAJE
-    PUNTAJE += puntos
-
-def dibujarPuntaje():
-    text_surface, rect = gameFont.render("Puntaje: " + str(PUNTAJE), WHITE)
-    #pantalla.blit(text_surface, ( 0, ALTO / 1.15), ( 0, ALTO / 1.15))
-    pantalla.blit(text_surface, ( 0, ALTO / 1.15))
-
-def dibujarVidas():
-    text_surface, rect = gameFont.render("Vidas: " + str(vidas), WHITE)
-    #pantalla.blit(text_surface, ( 0, ALTO / 1.05), ( 0, ALTO / 1.05))
-    pantalla.blit(text_surface, ( 0, ALTO / 1.05))
-
-def saque():
-    global p
-    global j
-    pantalla.blit(BACKGROUND, p.rect, p.rect) 
-    p.rect.midbottom = j.rect.midtop
-    pantalla.blit(p.image, p.rect) 
-
-def perdio():
-    fuente = pygame.font.Font(None, 72)
-    texto = fuente.render("GAME OVER", True, WHITE)
-    texto_rect = texto.get_rect()
-    texto_rect.center = [ANCHO / 2  , ALTO / 2]
-    pantalla.blit(BACKGROUND,(0,0))
-    pantalla.blit(texto,texto_rect)
     pygame.display.flip()
     time.sleep(3)
     sys.exit()
 
-def gano(jugando):
+def win():
     pass
 
-def romperLadrillo(ladrillo,pelota):
-    ladrillo.resistencia -= pelota.fuerza
-    if ladrillo.resistencia <= pelota.fuerza: # 3 3
-        ladrillo.resistencia = 0
-    if ladrillo.resistencia <= 0:
+def breakBrick(brick,proyectile):
+    brick.resistance -= proyectile.strengh
+    if brick.resistance <= proyectile.strengh: # 3 3
+        brick.resistance = 0
+    if brick.resistance <= 0:
 
     
-        pantalla.blit(BACKGROUND, ladrillo.rect, ladrillo.rect)
-        todos.remove(ladrillo)
-        return ladrillo.puntos
+        SCR.blit(BACKGROUND, brick.rect, brick.rect)
+        brickGroup.remove(brick)
+        return brick.points
     else:
         return 0
+
 pygame.init()
+GAME_FONT = pygame.freetype.SysFont('roboto', 20, bold=False, italic=False)
 
 
 #TODO:
     #Power Ups
-    #Otros ladrillos <--
+    #Otros ladrillos <--ball
     #Mostrar Tiempo
     #Pantalla de inicio
     #Opcional Distintos niveles
 
-gameFont = pygame.freetype.SysFont('roboto', 20, bold=False, italic=False)
+SCR.blit(BACKGROUND, (0, 0))
 
-listaPowerUP= [POWER_FUERZA,POWER_LARGE,POWER_SMALL] 
+brickGroup  = pygame.sprite.Group()
+brickGroup.add( [createBricks(BRICK_AMOUNT,POWERU_UP_LIST)])
+brickGroup.draw(SCR)
 
-todos  = pygame.sprite.Group()
+ballGroup = pygame.sprite.Group()
+ball = t.Pelota(ANCHO /2,ALTO/2)
+SCR.blit(BACKGROUND, ball.rect, ball.rect) 
+ballGroup.add([ball])
 
-grupoPelota = pygame.sprite.Group()
-p = t.Pelota(ANCHO /2,ALTO/2)
-pantalla.blit(BACKGROUND, p.rect, p.rect) 
-grupoPelota.add([p])
+playerGroup = pygame.sprite.Group()
+player = jugador.Jugador((ANCHO /2),ALTO -50)
+playerGroup.add([player])
 
-grupoJugador = pygame.sprite.Group()
-j = jugador.Jugador((ANCHO /2),ALTO -50)
-grupoJugador.add([j])
-grupoPowerUp = pygame.sprite.Group()
-reloj = pygame.time.Clock()
-vidas = 3
-generarLadrillos(100,listaPowerUP)
+powerUpGroup = pygame.sprite.Group()
 
-esperando_saque = True
-jugando = True
+clock = pygame.time.Clock()
 
-pantalla.blit(BACKGROUND, (0, 0))
-pantalla.blit(j.image, j.rect)
+lives = 3
+
+waitingServe = True
+playing = True
+
+
+SCR.blit(player.image, player.rect)
 #Bucle principal
-while jugando:
+while playing:
     #Eventos del juego
     for event in pygame.event.get():
         #Cierra el juego con la cruz
         if event.type == pygame.QUIT:
-            jugando = False
+            playing = False
         #Eventos de apretar una tecla
         elif event.type == pygame.KEYDOWN:
-            if (event.key == pygame.K_SPACE and esperando_saque == True):
-                esperando_saque = False        
+            if (event.key == pygame.K_SPACE and waitingServe == True):
+                waitingServe = False 
+
     joystick = pygame.key.get_pressed()
     if joystick[pygame.K_LEFT]:
-        pantalla.blit(BACKGROUND, j.rect, j.rect)
-        j.izquierda(0)
-        pantalla.blit(j.image, j.rect) 
+        SCR.blit(BACKGROUND, player.rect, player.rect)
+        player.moveLeft(0)
+        SCR.blit(player.image, player.rect) 
     elif joystick[pygame.K_RIGHT]:
-        pantalla.blit(BACKGROUND, j.rect, j.rect)
-        j.derecha(ANCHO-10)
-        pantalla.blit(j.image, j.rect)
-    
+        SCR.blit(BACKGROUND, player.rect, player.rect)
+        player.moveRight(ANCHO-10)
+        SCR.blit(player.image, player.rect)
 
     #Choque con el jugador
-    if pygame.sprite.spritecollideany(p, grupoJugador):
-        pantalla.blit(BACKGROUND, p.rect, p.rect)
-        p.update(ANCHO,ALTO,True)
-        pantalla.blit(p.image, p.rect)
+    if pygame.sprite.spritecollideany(ball, playerGroup):
+        SCR.blit(BACKGROUND, ball.rect, ball.rect)
+        ball.update(ANCHO,ALTO,True)
+        SCR.blit(ball.image, ball.rect)
         #porque aveces la pelota se come un pedazo de la paleta
-        pantalla.blit(BACKGROUND, j.rect, j.rect)
-        pantalla.blit(j.image, j.rect)
+        SCR.blit(BACKGROUND, player.rect, player.rect)
+        SCR.blit(player.image, player.rect)
     #Rebote de la pelota con los ladrillos o paredes.
-    listaLadrillos = pygame.sprite.spritecollide(p, todos, False)
-    if listaLadrillos:
-        ladrillo = listaLadrillos[0]
-    
-        if p.fuerza > 1:
-            p.fuerza-= ladrillo.resistencia
-            puntos = romperLadrillo(ladrillo,p)    
-            if p.fuerza <= 0:
-                p.fuerza = 1
-            pantalla.blit(BACKGROUND, p.rect, p.rect)
-            p.update(ANCHO,ALTO)
-            pantalla.blit(p.image, p.rect)
-        else:
-            puntos = romperLadrillo(ladrillo,p)
-            #si pelota fuerza == 1
-            if p.rect.right <= ladrillo.rect.left or p.rect.left >= ladrillo.rect.right:
-                pantalla.blit(BACKGROUND, p.rect, p.rect)
-                p.update(ANCHO,ALTO,False,True)
-                pantalla.blit(p.image, p.rect)
-            elif ladrillo.rect.left <= p.rect.centerx and ladrillo.rect.right  >= p.rect.centerx:
-                pantalla.blit(BACKGROUND, p.rect, p.rect)
-                p.update(ANCHO,ALTO,True)
-                pantalla.blit(p.image, p.rect)
-        
-        
-        if puntos > 0:
-            sumarPuntaje(puntos)
-            if isinstance(ladrillo, ld.ladrillo_p):
-                grupoPowerUp.add([powerup.powerUp(ladrillo.rect.x, ladrillo.rect.y, ladrillo.powerUp,ladrillo.imagenPU)])
-      
-    if grupoPowerUp:
-        for power in grupoPowerUp:
-            pantalla.blit(BACKGROUND, power.rect, power.rect)
+    collisionedBricks = pygame.sprite.spritecollide(ball, brickGroup, False)
+    if collisionedBricks:
+        for brick in collisionedBricks:
+            
+            SCR.blit(brick.image, brick.rect)
+            if ball.strengh > 1:
+                ball.strengh-= brick.resistance
+                points = breakBrick(brick,ball)    
+                SCR.blit(BACKGROUND, brick.rect, brick.rect)
+                if ball.strengh <= 0:
+                    ball.strengh = 1
+                SCR.blit(BACKGROUND, ball.rect, ball.rect)
+                ball.update(ANCHO,ALTO) #this function moves ball
+                SCR.blit(ball.image, ball.rect)
+            else:
+                points = breakBrick(brick,ball)
+                
+                #si pelota fuerza == 1
+                if ball.rect.right <= brick.rect.left or ball.rect.left >= brick.rect.right:
+                    SCR.blit(BACKGROUND, ball.rect, ball.rect)
+                    ball.update(ANCHO,ALTO,False,True)
+                    SCR.blit(ball.image, ball.rect)
+                    SCR.blit(brick.image, brick.rect)
+
+                elif brick.rect.left <= ball.rect.centerx and brick.rect.right  >= ball.rect.centerx:
+                    SCR.blit(BACKGROUND, ball.rect, ball.rect)
+                    ball.update(ANCHO,ALTO,True)
+                    SCR.blit(ball.image, ball.rect)
+                    SCR.blit(brick.image, brick.rect)
+            
+            
+            if points > 0:
+                SCR.blit(BACKGROUND, brick.rect, brick.rect)
+                addScore(points)
+                if isinstance(brick, ld.ladrillo_p):
+                    powerUpGroup.add([powerup.powerUp(brick.rect.x, brick.rect.y, brick.powerUp,brick.imagenPU)])
+
+    if powerUpGroup:
+        for power in powerUpGroup:
+            SCR.blit(BACKGROUND, power.rect, power.rect)
             power.fallDown()    
-            pantalla.blit(power.image, power.rect)
-    powerUpColisioned = pygame.sprite.spritecollide(j, grupoPowerUp, True)
+            SCR.blit(power.image, power.rect)
+    powerUpColisioned = pygame.sprite.spritecollide(player, powerUpGroup, True)
     if powerUpColisioned:
-        pantalla.blit(BACKGROUND, powerUpColisioned[0], powerUpColisioned[0])
+        SCR.blit(BACKGROUND, powerUpColisioned[0], powerUpColisioned[0])
         if powerUpColisioned[0].powerUp == POWER_LARGE[0]:
-            pantalla.blit(BACKGROUND, j.rect, j.rect)
-            j.getBig()
-            pantalla.blit(j.image, j.rect)
+            SCR.blit(BACKGROUND, player.rect, player.rect)
+            player.getBig()
+            SCR.blit(player.image, player.rect)
         elif powerUpColisioned[0].powerUp == POWER_FUERZA[0]:
-            p.masFuerza()
+            ball.masFuerza()
         elif powerUpColisioned[0].powerUp == POWER_SMALL[0]:
-            pantalla.blit(BACKGROUND, j.rect, j.rect)
-            j.getSmall()
-            pantalla.blit(j.image, j.rect)
+            SCR.blit(BACKGROUND, player.rect, player.rect)
+            player.getSmall()
+            SCR.blit(player.image, player.rect)
 
+    drawScore()
+    drawLives()
     
-    #Color de fondo de la pantalla
-    #pantalla.fill((255,255,255))
-    #Dibuja los objetos
-    todos.draw(pantalla)
-    #Dibuja la pelota en la pantalla
-    #Dibuja al jugador en la pantalla
-
-    dibujarPuntaje()
-    dibujarVidas()
 
     #Actualiza la pantalla
     pygame.display.flip()
 
     #Actualiza la posicion de la pelota
-    if esperando_saque == True:
-        saque()
+    if waitingServe == True:
+        serve()
     else:
-        pantalla.blit(BACKGROUND, p.rect, p.rect) 
-        p.update(ANCHO,ALTO)
-        pantalla.blit(p.image, p.rect) 
-    if len(todos) == 0:
-        ganaste()
+        SCR.blit(BACKGROUND, ball.rect, ball.rect) 
+        ball.update(ANCHO,ALTO)
+        SCR.blit(ball.image, ball.rect) 
+    if len(brickGroup) == 0:
+        win()
     
     #Si la pelota se cae por abajo el jugador pierde una vida. Si pierde todas las vidas pierde el juego.
-    if p.rect.top > ALTO + 20:
-        if vidas > 1:
-            vidas -=1
-            esperando_saque = True
-            saque()
+    if ball.rect.top > ALTO + 20:
+        if lives > 1:
+            lives -=1
+            waitingServe = True
+            serve()
         else:
-            pantalla.fill((255,255,255))
-            perdio()
+            gameOver()
     
     
-    reloj.tick(60)
+    clock.tick(60)
 
 pygame.quit()
-    

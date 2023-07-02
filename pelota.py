@@ -8,20 +8,20 @@ class Pelota(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
-        self.velocidadH = 5
-        self.velocidadV = 5
-        self.fuerza = 1
+        self.verticalSpeed = 5
+        self.horizontalSpeed = 5
+        self.strengh = 1
 
     def update(self,limX,limY,choquevertical = False, choqueHorizontal = False):
         
         if self.rect.right >= limX or self.rect.left <= 0 or choqueHorizontal:
-            self.velocidadH *= -1
+            self.verticalSpeed *= -1
         if self.rect.top <= 0 or choquevertical:
-            self.velocidadV *= -1
+            self.horizontalSpeed *= -1
 
-        self.rect.x += self.velocidadH
-        self.rect.y += self.velocidadV
+        self.rect.x += self.verticalSpeed
+        self.rect.y += self.horizontalSpeed
         
     def masFuerza(self):
-        self.fuerza = FUERZA_POWERUP 
+        self.strengh = FUERZA_POWERUP 
 

@@ -10,10 +10,10 @@ class Jugador(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x - self.rect.width/2
         self.rect.y = y
-        self.ANCHO_INICIAL = self.rect.width
+        self.INITIAL_WIDTH = self.rect.width
         
     
-    def izquierda(self,limX):
+    def moveLeft(self,limX):
         if self.rect.left <= limX:
             pass
         else:
@@ -21,21 +21,21 @@ class Jugador(pygame.sprite.Sprite):
         
         
     
-    def derecha(self,limX):
+    def moveRight(self,limX):
         if self.rect.right >= limX:
             pass
         else:
             self.rect.x += 10
 
     def getBig(self):
-        if not self.rect.width >= self.ANCHO_INICIAL * 2:
+        if not self.rect.width >= self.INITIAL_WIDTH * 2:
             tempX = self.rect.x
             tempY = self.rect.y
             self.image = pygame.transform.scale(self.image, (self.rect.width * Scale_Factor, self.rect.height))
             self.rect = self.image.get_rect(x=tempX, y=tempY)
 
     def getSmall(self):
-        if not self.rect.width<= self.ANCHO_INICIAL / 2:
+        if not self.rect.width<= self.INITIAL_WIDTH / 2:
             tempX = self.rect.x
             tempY = self.rect.y
             self.image = pygame.transform.scale(self.image, (self.rect.width / Scale_Factor, self.rect.height))
