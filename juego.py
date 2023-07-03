@@ -7,14 +7,16 @@ import time #Sirve para determinar los FPS del juego
 import sys #
 import random as rn #generar numeros al azar
 import powerup
+import misil
 #Info del juego y Pantalla
 ANCHO = 1280 
 ALTO = 720
 SCORE = 0
 #Tupla = Letra que identifica a cada power up y su imagen
-POWER_LARGE = 'M',"resources/imgLarge.png"
+POWER_LARGE = 'L',"resources/imgLarge.png"
 POWER_FUERZA = "F","resources/imgFuerza.png"
 POWER_SMALL = "S","resources/imgSmall.png"
+POWER_SHOOT = "M","resources/imgMisille.png"
 
 SCR = pygame.display.set_mode((ANCHO,ALTO)) #inicializo la pantalla
 
@@ -22,7 +24,7 @@ BRICK_AMOUNT = 100
 SEPARACION_LADRILLOS =10 
 
 
-POWERU_UP_LIST= [POWER_FUERZA,POWER_LARGE,POWER_SMALL]
+POWERU_UP_LIST= [POWER_FUERZA,POWER_LARGE,POWER_SMALL,POWER_SHOOT]
 
 BLACK = ( 0, 0, 0)
 WHITE = (255, 255, 255)
@@ -54,7 +56,7 @@ def createBricks(amount,powerUps):
             del greenBrick
         elif brickType==3:
             num = rn.randrange(0,len(powerUps))
-            violetBrick = ld.ladrillo_p(PURPLE,posWidth,posHeight, 3,2,powerUps[num][0],powerUps[num][1])
+            violetBrick = ld.ladrillo_p(PURPLE,posWidth,posHeight, 1,2,POWERU_UP_LIST[num][0],POWERU_UP_LIST[num][1])
             brickGroup.add([violetBrick])
             del violetBrick
             del num
@@ -68,6 +70,7 @@ def createBricks(amount,powerUps):
 def addScore(pts):
     global SCORE
     SCORE += pts
+
 
 def drawScore():
     text_surface, rect = GAME_FONT.render("Puntaje: " + str(SCORE), WHITE)
@@ -105,11 +108,9 @@ def win():
 
 def breakBrick(brick,proyectile):
     brick.resistance -= proyectile.strengh
-    if brick.resistance <= proyectile.strengh: # 3 3
+    if brick.resistance <= proyectile.strengh: 
         brick.resistance = 0
     if brick.resistance <= 0:
-
-    
         SCR.blit(BACKGROUND, brick.rect, brick.rect)
         brickGroup.remove(brick)
         return brick.points
@@ -142,15 +143,19 @@ playerGroup = pygame.sprite.Group()
 player = jugador.Jugador((ANCHO /2),ALTO -50)
 playerGroup.add([player])
 
+
+missileGroup = pygame.sprite.Group()
+
 powerUpGroup = pygame.sprite.Group()
 
 clock = pygame.time.Clock()
 
 lives = 3
+points = 0
 
 waitingServe = True
 playing = True
-
+shootPU = False
 
 SCR.blit(player.image, player.rect)
 #Bucle principal
@@ -162,8 +167,41 @@ while playing:
             playing = False
         #Eventos de apretar una tecla
         elif event.type == pygame.KEYDOWN:
-            if (event.key == pygame.K_SPACE and waitingServe == True):
-                waitingServe = False 
+            if (event.key == pygame.K_SPACE and waitingServe):
+                waitingServe = False
+            elif (event.key == pygame.K_SPACE and not waitingServe and shootPU):
+                missile = misil.Misille(player.rect.centerx,player.rect.y)                
+                missileGroup.add([missile])
+                  
+                player.setShoot(player.getShoot()-1)
+                if player.getShoot() == 0:
+                    shootPU = False
+
+    if (shootPU or len(missileGroup)>0):
+        try:        
+            for m in missileGroup:    
+                SCR.blit(BACKGROUND,m.rect,m.rect)
+                m.lauch() 
+                SCR.blit(m.image,m.rect)
+                if m.rect.y < 0 - m.rect.height - 40:
+                    missileGroup.remove(m)
+            
+            
+                
+                    
+        except Exception as e:
+           print(e)
+
+    
+
+    for m in  missileGroup:   
+        crashedBrick = pygame.sprite.spritecollideany(m, brickGroup)
+        if crashedBrick:
+                points = breakBrick(crashedBrick,m)
+                missileGroup.remove(m)
+                SCR.blit(BACKGROUND,m.rect,m.rect)
+                del m
+
 
     joystick = pygame.key.get_pressed()
     if joystick[pygame.K_LEFT]:
@@ -241,6 +279,11 @@ while playing:
             SCR.blit(BACKGROUND, player.rect, player.rect)
             player.getSmall()
             SCR.blit(player.image, player.rect)
+        elif powerUpColisioned[0].powerUp == POWER_SHOOT[0]:
+            player.setShoot(5)
+            shootPU = True
+
+            
 
     drawScore()
     drawLives()

@@ -1,4 +1,5 @@
 import pygame
+import misil
 
 Scale_Factor = 1.2
 
@@ -11,6 +12,7 @@ class Jugador(pygame.sprite.Sprite):
         self.rect.x = x - self.rect.width/2
         self.rect.y = y
         self.INITIAL_WIDTH = self.rect.width
+        self.shoot = 0
         
     
     def moveLeft(self,limX):
@@ -40,3 +42,14 @@ class Jugador(pygame.sprite.Sprite):
             tempY = self.rect.y
             self.image = pygame.transform.scale(self.image, (self.rect.width / Scale_Factor, self.rect.height))
             self.rect = self.image.get_rect(x=tempX, y=tempY)
+
+    
+    def getShoot(self):
+        return self.shoot
+    
+    def setShoot(self,num):
+        self.shoot = num
+
+    
+
+
