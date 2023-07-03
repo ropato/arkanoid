@@ -43,16 +43,16 @@ def createBricks(amount,powerUps):
     bricks = []
     #Genera los ladrillos
     for i in range(amount):
-        brickType =3#rn.randrange(0,4)
+        brickType =rn.randrange(0,4)
         if posWidth + ld.BRICK_SIZE[0] + BRICKS_DISTANCE  > WIDTH:
             posWidth = 20
             posHeight += ld.BRICK_SIZE[1] + 20    
         if brickType == 1:
-            redBrick = ld.Ladrillo(RED,posWidth,posHeight, 1,1)
+            redBrick = ld.normalBrick(RED,posWidth,posHeight, 1,1)
             brickGroup.add([redBrick])
             del redBrick
         elif brickType == 2:
-            greenBrick = ld.Ladrillo(GREEN,posWidth,posHeight, 2,2)
+            greenBrick = ld.normalBrick(GREEN,posWidth,posHeight, 2,2)
             brickGroup.add([greenBrick])
             del greenBrick
         elif brickType==3:
@@ -62,7 +62,7 @@ def createBricks(amount,powerUps):
             del violetBrick
             del num
         else:
-            blueBrick = ld.Ladrillo(BLUE,posWidth,posHeight, 3,3)
+            blueBrick = ld.normalBrick(BLUE,posWidth,posHeight, 3,3)
             brickGroup.add([blueBrick])
             del blueBrick
         posWidth += ld.BRICK_SIZE[0] + BRICKS_DISTANCE
@@ -107,10 +107,10 @@ def gameOver():
 def win():
     pass
 
-def breakBrick(brickGroup,brk,proyectile):
-    brk.resistance -= proyectile.strengh
-    if brk.resistance <= proyectile.strengh: # 3 3
-        brk.resistance = 0
+def breakBrick(brk,proyectile):
+    brk.setResistance(brk.getResistance()-1)
+    #if brk.resistance <= proyectile.strengh: # 3 3
+        #brk.resistance = 0
     if brk.resistance <= 0:
         brk.breakSound.play()
         return brk.points
@@ -138,6 +138,13 @@ def addPowerUp(points,powerUpGroup,brick,SCR):
                     powerUpGroup.add([powerup.powerUp(brick.rect.x, brick.rect.y, brick.powerUp,brick.imagenPU)])
 
 
+def resistenceColor(brick,SCR):
+    try:
+        brick.resistanceColor()
+        SCR.blit(BACKGROUND, brick.rect, brick.rect)
+        SCR.blit(brick.image,brick.rect)
+    except Exception as e:
+            pass
 pygame.init()
 GAME_FONT = pygame.freetype.SysFont('roboto', 20, bold=False, italic=False)
 
@@ -236,9 +243,9 @@ while playing:
     #Rebote de la pelota con los ladrillos 
     collisionedBricks = pygame.sprite.spritecollide(ball, brickGroup, False)
     if len(collisionedBricks) > 0:
-        ball.bounce.play()
+        ball.bounce.play()  
         for brick in collisionedBricks:
-            
+
             SCR.blit(brick.image, brick.rect)
             if ball.strengh > 1:
                 ball.strengh-= brick.resistance
@@ -253,16 +260,18 @@ while playing:
                 #si pelota fuerza == 1
                 if abs(ball.rect.top - brick.rect.bottom) < COLLISION_TOLARANCE and ball.verticalSpeed < 0:
                     bounceV(brick, ball)
-                    points = breakBrick(brickGroup,brick,ball)
+                    points = breakBrick(brick,ball)
                 if abs(ball.rect.bottom - brick.rect.top) < COLLISION_TOLARANCE and ball.verticalSpeed > 0:
                     bounceV(brick, ball)
-                    points = breakBrick(brickGroup,brick,ball)
+                    points = breakBrick(brick,ball)
                 if abs(ball.rect.left - brick.rect.right) < COLLISION_TOLARANCE and ball.horizontalSpeed < 0:
                     bounceH(brick, ball)
-                    points = breakBrick(brickGroup,brick,ball)
+                    points = breakBrick(brick,ball)
                 if abs(ball.rect.right - brick.rect.left) < COLLISION_TOLARANCE and ball.horizontalSpeed > 0:
                     bounceH(brick, ball)
-                    points = breakBrick(brickGroup,brick,ball)
+                    points = breakBrick(brick,ball)
+        
+            resistenceColor(brick,SCR)
 
             addPowerUp(points,powerUpGroup,brick,SCR)
 
@@ -284,8 +293,9 @@ while playing:
         crashedBrick = pygame.sprite.spritecollideany(m, brickGroup)
         if crashedBrick:  
                        
-                points = breakBrick(brickGroup,crashedBrick,m)
+                points = breakBrick(crashedBrick,m)
                 addPowerUp(points,powerUpGroup,crashedBrick,SCR)
+                resistenceColor(crashedBrick,SCR)
                 if points > 0:
                     brickGroup.remove(crashedBrick)    
                 SCR.blit(BACKGROUND, crashedBrick.rect, crashedBrick.rect)

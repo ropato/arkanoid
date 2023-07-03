@@ -1,6 +1,15 @@
 import pygame
 import powerup
 BRICK_SIZE = [70, 20]
+BLACK = ( 0, 0, 0)
+WHITE = (255, 255, 255)
+GREEN = (0, 255, 0)
+RED = ( 255, 0, 0)
+BLUE = (0,0,255)
+PURPLE=(148,0,211)
+
+
+
 class Ladrillo(pygame.sprite.Sprite):
     def __init__(self,color,posX,posY,resistance, points):
         super().__init__()
@@ -15,6 +24,12 @@ class Ladrillo(pygame.sprite.Sprite):
         
     def getAnchoLadrillo(self):
         return self.rect.width
+    
+    def getResistance(self):
+        return self.resistance
+    
+    def setResistance(self,resistance):
+        self.resistance = resistance
 
     
 class ladrillo_p(Ladrillo):
@@ -24,5 +39,16 @@ class ladrillo_p(Ladrillo):
         self.imagenPU = imgPU
 
     
+class normalBrick(Ladrillo):
+    def __init__(self, color, posX, posY, resistance, points):
+        super().__init__(color, posX, posY, resistance, points)
+
+    def resistanceColor(self):
+        if self.resistance == 1:
+            self.image.fill(RED)
+        elif self.resistance == 2:
+            self.image.fill(GREEN)
+        elif self.resistance == 3:
+            self.image.fill(BLUE)
 
         
