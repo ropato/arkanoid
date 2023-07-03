@@ -248,7 +248,8 @@ while playing:
             SCR.blit(BACKGROUND, power.rect, power.rect)
             power.fallDown()    
             SCR.blit(power.image, power.rect)
-
+            for brick in brickGroup:
+                SCR.blit(brick.image,brick.rect)
     powerUpColisioned = pygame.sprite.spritecollide(player, powerUpGroup, True)
 
     if len(powerUpColisioned) > 0:
