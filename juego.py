@@ -112,8 +112,6 @@ def breakBrick(brickGroup,brk,proyectile):
     if brk.resistance <= proyectile.strengh: # 3 3
         brk.resistance = 0
     if brk.resistance <= 0:
-        brickGroup.remove(brk)
-        
         return brk.points
     else:
         return 0
@@ -129,6 +127,15 @@ def bounceH(brk, b):
     b.move()
     SCR.blit(b.image, b.rect)
     SCR.blit(brk.image, brk.rect)
+
+def addPowerUp(points,powerUpGroup,brick,SCR):
+    if points > 0:
+                SCR.blit(BACKGROUND, brick.rect, brick.rect)
+                brickGroup.remove(brick)
+                addScore(points)
+                if isinstance(brick, ld.ladrillo_p):
+                    powerUpGroup.add([powerup.powerUp(brick.rect.x, brick.rect.y, brick.powerUp,brick.imagenPU)])
+
 
 pygame.init()
 GAME_FONT = pygame.freetype.SysFont('roboto', 20, bold=False, italic=False)
@@ -194,28 +201,6 @@ while playing:
                 if player.getShoot() == 0:
                     shootPU = False
 
-    if (shootPU or len(missileGroup)>0):
-        try:        
-            for m in missileGroup:    
-                SCR.blit(BACKGROUND,m.rect,m.rect)
-                m.lauch() 
-                SCR.blit(m.image,m.rect)
-                if m.rect.y < 0 - m.rect.height - 40:
-                    missileGroup.remove(m)        
-        except Exception as e:
-           print(e)
-
-    
-
-    for m in  missileGroup:   
-        crashedBrick = pygame.sprite.spritecollideany(m, brickGroup)
-        if crashedBrick:
-                points = breakBrick(brickGroup,crashedBrick,m)
-                SCR.blit(BACKGROUND, crashedBrick.rect, crashedBrick.rect)
-                missileGroup.remove(m)
-                SCR.blit(BACKGROUND,m.rect,m.rect)
-                del m
-
 
     joystick = pygame.key.get_pressed()
     if joystick[pygame.K_LEFT]:
@@ -275,15 +260,37 @@ while playing:
                     bounceH(brick, ball)
                     points = breakBrick(brickGroup,brick,ball)
 
-            
+            addPowerUp(points,powerUpGroup,brick,SCR)
 
 
-            if points > 0:
-                SCR.blit(BACKGROUND, brick.rect, brick.rect)
-                brickGroup.remove(brick)
-                addScore(points)
-                if isinstance(brick, ld.ladrillo_p):
-                    powerUpGroup.add([powerup.powerUp(brick.rect.x, brick.rect.y, brick.powerUp,brick.imagenPU)])
+    if (shootPU or len(missileGroup)>0):
+        try:        
+            for m in missileGroup:    
+                SCR.blit(BACKGROUND,m.rect,m.rect)
+                m.lauch() 
+                SCR.blit(m.image,m.rect)
+                if m.rect.y < 0 - m.rect.height - 40:
+                    missileGroup.remove(m)        
+        except Exception as e:
+           print(e)
+
+    
+
+    for m in  missileGroup:   
+        crashedBrick = pygame.sprite.spritecollideany(m, brickGroup)
+        if crashedBrick:
+                
+                points = breakBrick(brickGroup,crashedBrick,m)
+                addPowerUp(points,powerUpGroup,brick,SCR)
+                if points > 0:
+                    brickGroup.remove(crashedBrick)
+
+                
+                SCR.blit(BACKGROUND, crashedBrick.rect, crashedBrick.rect)
+                missileGroup.remove(m)
+                SCR.blit(BACKGROUND,m.rect,m.rect)
+                del m
+
 
     if len(powerUpGroup) > 0:
         for power in powerUpGroup:
