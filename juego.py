@@ -217,6 +217,7 @@ while playing:
         SCR.blit(BACKGROUND, ball.rect, ball.rect) 
         ball.move()
         SCR.blit(ball.image, ball.rect) 
+
     #Choque con el jugador
     if pygame.sprite.spritecollideany(ball, playerGroup):
         SCR.blit(BACKGROUND, ball.rect, ball.rect)
@@ -230,6 +231,7 @@ while playing:
         ball.invertVSpeed()
     if ball.rect.left <= 0 or ball.rect.right >= WIDTH:
         ball.invertHSpeed()
+
     #Rebote de la pelota con los ladrillos 
     collisionedBricks = pygame.sprite.spritecollide(ball, brickGroup, False)
     if len(collisionedBricks) > 0:
@@ -278,14 +280,12 @@ while playing:
 
     for m in  missileGroup:   
         crashedBrick = pygame.sprite.spritecollideany(m, brickGroup)
-        if crashedBrick:
-                
+        if crashedBrick:  
+                       
                 points = breakBrick(brickGroup,crashedBrick,m)
-                addPowerUp(points,powerUpGroup,brick,SCR)
+                addPowerUp(points,powerUpGroup,crashedBrick,SCR)
                 if points > 0:
-                    brickGroup.remove(crashedBrick)
-
-                
+                    brickGroup.remove(crashedBrick)    
                 SCR.blit(BACKGROUND, crashedBrick.rect, crashedBrick.rect)
                 missileGroup.remove(m)
                 SCR.blit(BACKGROUND,m.rect,m.rect)
