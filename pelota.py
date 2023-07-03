@@ -11,6 +11,7 @@ class Pelota(pygame.sprite.Sprite):
         self.verticalSpeed = -5
         self.horizontalSpeed = 5
         self.strengh = 1
+        self.bounce = pygame.mixer.Sound("resources/rebotePelota.mp3")
 
     def invertVSpeed(self):
         self.verticalSpeed*= -1

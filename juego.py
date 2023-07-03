@@ -112,6 +112,7 @@ def breakBrick(brickGroup,brk,proyectile):
     if brk.resistance <= proyectile.strengh: # 3 3
         brk.resistance = 0
     if brk.resistance <= 0:
+        brk.breakSound.play()
         return brk.points
     else:
         return 0
@@ -235,6 +236,7 @@ while playing:
     #Rebote de la pelota con los ladrillos 
     collisionedBricks = pygame.sprite.spritecollide(ball, brickGroup, False)
     if len(collisionedBricks) > 0:
+        ball.bounce.play()
         for brick in collisionedBricks:
             
             SCR.blit(brick.image, brick.rect)

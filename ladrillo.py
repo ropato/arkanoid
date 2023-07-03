@@ -11,6 +11,7 @@ class Ladrillo(pygame.sprite.Sprite):
         self.rect.y = posY
         self.resistance = resistance
         self.points = points
+        self.breakSound = pygame.mixer.Sound("resources/romperLadrillo.mp3")
         
     def getAnchoLadrillo(self):
         return self.rect.width
