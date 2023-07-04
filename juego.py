@@ -32,6 +32,7 @@ WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
 RED = ( 255, 0, 0)
 BLUE = (0,0,255)
+GRAY = (64,64,64)
 PURPLE=(148,0,211)
 
 BACKGROUND = pygame.image.load('resources/bg1.jpg').convert()
@@ -43,28 +44,32 @@ def createBricks(amount,powerUps):
     bricks = []
     #Genera los ladrillos
     for i in range(amount):
-        brickType =rn.randrange(0,4)
+        brickType =rn.randrange(0,5)
         if posWidth + ld.BRICK_SIZE[0] + BRICKS_DISTANCE  > WIDTH:
             posWidth = 20
             posHeight += ld.BRICK_SIZE[1] + 20    
-        if brickType == 1:
+        if brickType == 0:
             redBrick = ld.normalBrick(RED,posWidth,posHeight, 1,1)
             brickGroup.add([redBrick])
             del redBrick
-        elif brickType == 2:
+        elif brickType == 1:
             greenBrick = ld.normalBrick(GREEN,posWidth,posHeight, 2,2)
             brickGroup.add([greenBrick])
             del greenBrick
-        elif brickType==3:
+        elif brickType==2:
             num = rn.randrange(0,len(powerUps))
-            violetBrick = ld.ladrillo_p(PURPLE,posWidth,posHeight, 1,2,POWER_SHOOT[0],POWER_SHOOT[1])
+            violetBrick = ld.ladrillo_p(PURPLE,posWidth,posHeight, 1,2,POWERU_UP_LIST[num][0],POWERU_UP_LIST[num][1])
             brickGroup.add([violetBrick])
             del violetBrick
             del num
-        else:
+        elif brickType == 3:
             blueBrick = ld.normalBrick(BLUE,posWidth,posHeight, 3,3)
             brickGroup.add([blueBrick])
             del blueBrick
+        elif brickType == 4:
+            grayBrick = ld.fallingBrick(GRAY,posWidth,posHeight, 4,4)
+            brickGroup.add([grayBrick])
+            del grayBrick
         posWidth += ld.BRICK_SIZE[0] + BRICKS_DISTANCE
     return bricks
 
@@ -98,14 +103,21 @@ def gameOver():
     text_surface, rect = GAME_FONT.render("GAME OVER", WHITE, size = 100)
     rect.centerx = WIDTH / 2
     rect.centery = HEIGHT / 2
-    SCR.blit(text_surface, rect, )
+    SCR.blit(text_surface, rect )
     
     pygame.display.flip()
     time.sleep(3)
     sys.exit()
 
 def win():
-    pass
+    text_surface, rect = GAME_FONT.render("GANASTE", WHITE, size = 100)
+    rect.centerx = WIDTH / 2
+    rect.centery = HEIGHT / 2
+    SCR.blit(text_surface, rect )
+    
+    pygame.display.flip()
+    time.sleep(3)
+    sys.exit()
 
 def breakBrick(brk,proyectile):
     brk.setResistance(brk.getResistance()-1)
@@ -145,6 +157,8 @@ def resistenceColor(brick,SCR):
         SCR.blit(brick.image,brick.rect)
     except Exception as e:
             pass
+    
+
 pygame.init()
 GAME_FONT = pygame.freetype.SysFont('roboto', 20, bold=False, italic=False)
 
@@ -249,7 +263,7 @@ while playing:
             SCR.blit(brick.image, brick.rect)
             if ball.strengh > 1:
                 ball.strengh-= brick.resistance
-                points = breakBrick(brickGroup,brick,ball)    
+                points = breakBrick(brick,ball)    
                 SCR.blit(BACKGROUND, brick.rect, brick.rect)
                 if ball.strengh <= 0:
                     ball.strengh = 1
@@ -275,6 +289,27 @@ while playing:
 
             addPowerUp(points,powerUpGroup,brick,SCR)
 
+            #Verifica si el ladrillo es de la clase ladrillo flojo
+            if isinstance(brick, ld.fallingBrick):
+                SCR.blit(BACKGROUND, ball.rect, ball.rect)
+                brick.falling = True
+                SCR.blit(brick.image,brick.rect)
+
+    #Ladrillo flojo. si se choco una vez, se cae. Si le pega al jugador le resta una vida.
+    #Si el ladrillo se va por abajo del jugador sin pegarle se elimina
+    for brick in brickGroup:
+        if isinstance(brick, ld.fallingBrick) and brick.falling:
+                SCR.blit(BACKGROUND, brick.rect, brick.rect)
+                brick.fall()
+                SCR.blit(brick.image,brick.rect)   
+        if pygame.sprite.spritecollideany(brick, playerGroup):
+            lives -= 1
+            SCR.blit(BACKGROUND, brick.rect, brick.rect)
+            brickGroup.remove(brick)
+        if brick.rect.y > HEIGHT + 10:
+            brickGroup.remove(brick)
+            del brick
+
 
     if (shootPU or len(missileGroup)>0):
         try:        
@@ -285,7 +320,7 @@ while playing:
                 if m.rect.y < 0 - m.rect.height - 40:
                     missileGroup.remove(m)        
         except Exception as e:
-           print(e)
+           pass
 
     
 
@@ -329,7 +364,9 @@ while playing:
             elif powerUpColisioned[0].powerUp == POWER_SHOOT[0]:
                 player.setShoot(5)
                 shootPU = True
+            SCR.blit(BACKGROUND, powerUpColisioned[0], powerUpColisioned[0])
             powerUpGroup.remove(power)
+
             
 
             
@@ -344,6 +381,7 @@ while playing:
     
     if len(brickGroup) == 0:
         win()
+        
     
     #Si la pelota se cae por abajo el jugador pierde una vida. Si pierde todas las vidas pierde el juego.
     if ball.rect.top > HEIGHT + 20:
@@ -352,6 +390,10 @@ while playing:
             waitingServe = True
             serve()
         else:
+            gameOver()
+        
+        
+    if lives == 0:
             gameOver()
     
     

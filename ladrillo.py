@@ -51,4 +51,10 @@ class normalBrick(Ladrillo):
         elif self.resistance == 3:
             self.image.fill(BLUE)
 
-        
+class fallingBrick(Ladrillo):
+    def __init__(self, color, posX, posY, resistance, points):
+        super().__init__(color, posX, posY, resistance, points)
+        self.verticalSpeed = 3
+        self.falling = False
+    def fall(self):
+        self.rect.y += self.verticalSpeed
