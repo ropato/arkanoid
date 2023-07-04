@@ -9,7 +9,7 @@ class Misille(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x 
         self.rect.y = y - self.rect.height
-        self.strengh = 2
+        self.strenght = 2
     
     def lauch(self):
         self.rect.y -= 5

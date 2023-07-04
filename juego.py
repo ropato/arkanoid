@@ -121,7 +121,7 @@ def win():
 
 def breakBrick(brk,proyectile):
     brk.setResistance(brk.getResistance()-1)
-    #if brk.resistance <= proyectile.strengh: # 3 3
+    #if brk.resistance <= proyectile.strenght: # 3 3
         #brk.resistance = 0
     if brk.resistance <= 0:
         brk.breakSound.play()
@@ -261,12 +261,12 @@ while playing:
         for brick in collisionedBricks:
 
             SCR.blit(brick.image, brick.rect)
-            if ball.strengh > 1:
-                ball.strengh-= brick.resistance
+            if ball.strenght > 1:
+                ball.strenght-= brick.resistance
                 points = breakBrick(brick,ball)    
                 SCR.blit(BACKGROUND, brick.rect, brick.rect)
-                if ball.strengh <= 0:
-                    ball.strengh = 1
+                if ball.strenght <= 0:
+                    ball.strenght = 1
                 SCR.blit(BACKGROUND, ball.rect, ball.rect)
                 ball.move() 
                 SCR.blit(ball.image, ball.rect)
