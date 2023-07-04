@@ -7,7 +7,7 @@ class Jugador(pygame.sprite.Sprite):
 
     def __init__(self,x,y):
         super().__init__()
-        self.image = pygame.image.load("resources/jugador.png")
+        self.image = pygame.image.load("resources/messi.png")
         self.rect = self.image.get_rect()
         self.rect.x = x - self.rect.width/2
         self.rect.y = y

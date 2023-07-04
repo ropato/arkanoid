@@ -16,7 +16,7 @@ SCORE = 0
 POWER_LARGE = 'L',"resources/imgLarge.png"
 POWER_FUERZA = "F","resources/imgFuerza.png"
 POWER_SMALL = "S","resources/imgSmall.png"
-POWER_SHOOT = "M","resources/imgMisille.png"
+POWER_SHOOT = "M","resources/imgMissile.png"
 
 SCR = pygame.display.set_mode((WIDTH,HEIGHT)) #inicializo la pantalla
 
@@ -260,16 +260,19 @@ while playing:
         ball.bounce.play()  
         for brick in collisionedBricks:
 
+
+
+
             SCR.blit(brick.image, brick.rect)
             if ball.strenght > 1:
                 ball.strenght-= brick.resistance
                 points = breakBrick(brick,ball)    
-                SCR.blit(BACKGROUND, brick.rect, brick.rect)
                 if ball.strenght <= 0:
                     ball.strenght = 1
                 SCR.blit(BACKGROUND, ball.rect, ball.rect)
                 ball.move() 
                 SCR.blit(ball.image, ball.rect)
+                SCR.blit(BACKGROUND, brick.rect, brick.rect)
             else:
                 #si pelota fuerza == 1
                 if abs(ball.rect.top - brick.rect.bottom) < COLLISION_TOLARANCE and ball.verticalSpeed < 0:
@@ -326,8 +329,7 @@ while playing:
 
     for m in  missileGroup:   
         crashedBrick = pygame.sprite.spritecollideany(m, brickGroup)
-        if crashedBrick:  
-                       
+        if crashedBrick:           
                 points = breakBrick(crashedBrick,m)
                 addPowerUp(points,powerUpGroup,crashedBrick,SCR)
                 resistenceColor(crashedBrick,SCR)
@@ -338,7 +340,7 @@ while playing:
                 SCR.blit(BACKGROUND,m.rect,m.rect)
                 del m
 
-
+    #hace caer al power up
     if len(powerUpGroup) > 0:
         for power in powerUpGroup:
             SCR.blit(BACKGROUND, power.rect, power.rect)
@@ -346,8 +348,10 @@ while playing:
             SCR.blit(power.image, power.rect)
             for brick in brickGroup:
                 SCR.blit(brick.image,brick.rect)
-    powerUpColisioned = pygame.sprite.spritecollide(player, powerUpGroup, True)
 
+    #Verifica si el power up que cae choca con el jugador
+    powerUpColisioned = pygame.sprite.spritecollide(player, powerUpGroup, True)
+    #si choca, le da el power up al jugador
     if len(powerUpColisioned) > 0:
         for power in powerUpColisioned:
             SCR.blit(BACKGROUND, powerUpColisioned[0], powerUpColisioned[0])
@@ -368,7 +372,10 @@ while playing:
             powerUpGroup.remove(power)
 
             
-
+    
+    if (ball.rect.left < 0 or ball.rect.top > HEIGHT):
+        print(ball.rect)
+        waitingServe = True
             
 
     drawScore()
