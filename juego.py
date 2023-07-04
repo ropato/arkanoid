@@ -49,25 +49,25 @@ def createBricks(amount,powerUps):
             posWidth = 20
             posHeight += ld.BRICK_SIZE[1] + 20    
         if brickType == 0:
-            redBrick = ld.normalBrick(RED,posWidth,posHeight, 1,1)
+            redBrick = ld.normalBrick("resources/ladrilloRojo.png",posWidth,posHeight, 1,1)
             brickGroup.add([redBrick])
             del redBrick
         elif brickType == 1:
-            greenBrick = ld.normalBrick(GREEN,posWidth,posHeight, 2,2)
+            greenBrick = ld.normalBrick("resources/ladrilloVerde.png",posWidth,posHeight, 2,2)
             brickGroup.add([greenBrick])
             del greenBrick
         elif brickType==2:
             num = rn.randrange(0,len(powerUps))
-            violetBrick = ld.ladrillo_p(PURPLE,posWidth,posHeight, 1,2,POWERU_UP_LIST[num][0],POWERU_UP_LIST[num][1])
+            violetBrick = ld.ladrillo_p("resources/ladrilloVioleta.png",posWidth,posHeight, 1,2,POWERU_UP_LIST[num][0],POWERU_UP_LIST[num][1])
             brickGroup.add([violetBrick])
             del violetBrick
             del num
         elif brickType == 3:
-            blueBrick = ld.normalBrick(BLUE,posWidth,posHeight, 3,3)
+            blueBrick = ld.normalBrick("resources/ladrilloAzul.png",posWidth,posHeight, 3,3)
             brickGroup.add([blueBrick])
             del blueBrick
         elif brickType == 4:
-            grayBrick = ld.fallingBrick(GRAY,posWidth,posHeight, 4,4)
+            grayBrick = ld.fallingBrick("resources/ladrilloGris.png",posWidth,posHeight, 4,4)
             brickGroup.add([grayBrick])
             del grayBrick
         posWidth += ld.BRICK_SIZE[0] + BRICKS_DISTANCE
@@ -251,7 +251,7 @@ while playing:
         SCR.blit(player.image, player.rect)
     if ball.rect.top <= 0 :
         ball.invertVSpeed()
-    if ball.rect.left <= 0 or ball.rect.right >= WIDTH:
+    if ball.rect.left <= 1 or ball.rect.right >= WIDTH:
         ball.invertHSpeed()
 
     #Rebote de la pelota con los ladrillos 
@@ -286,7 +286,6 @@ while playing:
                     points = breakBrick(brick,ball)
         
             resistenceColor(brick,SCR)
-
             addPowerUp(points,powerUpGroup,brick,SCR)
 
             #Verifica si el ladrillo es de la clase ladrillo flojo
@@ -307,6 +306,7 @@ while playing:
             SCR.blit(BACKGROUND, brick.rect, brick.rect)
             brickGroup.remove(brick)
         if brick.rect.y > HEIGHT + 10:
+            SCR.blit(BACKGROUND, brick.rect, brick.rect)
             brickGroup.remove(brick)
             del brick
 

@@ -11,10 +11,9 @@ PURPLE=(148,0,211)
 
 
 class Ladrillo(pygame.sprite.Sprite):
-    def __init__(self,color,posX,posY,resistance, points):
+    def __init__(self,image,posX,posY,resistance, points):
         super().__init__()
-        self.image = pygame.Surface(BRICK_SIZE)
-        self.image.fill(color)
+        self.image = pygame.image.load(image)
         self.rect = self.image.get_rect()
         self.rect.x = posX
         self.rect.y = posY
@@ -45,11 +44,11 @@ class normalBrick(Ladrillo):
 
     def resistanceColor(self):
         if self.resistance == 1:
-            self.image.fill(RED)
+            self.image = pygame.image.load("resources/ladrilloRojo.png")
         elif self.resistance == 2:
-            self.image.fill(GREEN)
+            self.image = pygame.image.load("resources/ladrilloVerde.png")
         elif self.resistance == 3:
-            self.image.fill(BLUE)
+            self.image = pygame.image.load("resources/ladrilloAzul.png")
 
 class fallingBrick(Ladrillo):
     def __init__(self, color, posX, posY, resistance, points):
