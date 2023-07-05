@@ -37,7 +37,7 @@ PURPLE=(148,0,211)
 
 BACKGROUND = pygame.image.load('resources/bg1.jpg').convert()
 
-
+#crea los ladrillos.
 def createBricks(amount,powerUps): 
     posWidth = 20
     posHeight = 0   
@@ -73,11 +73,12 @@ def createBricks(amount,powerUps):
         posWidth += ld.BRICK_SIZE[0] + BRICKS_DISTANCE
     return bricks
 
+#suma los puntos al puntaje total.
 def addScore(pts):
     global SCORE
     SCORE += pts
 
-
+#Dibuja el puntaje en la pantalla.
 def drawScore():
     text_surface, rect = GAME_FONT.render("Puntaje: " + str(SCORE), WHITE)
     rect.x = 0
@@ -85,6 +86,7 @@ def drawScore():
     SCR.blit(BACKGROUND, rect, rect)
     SCR.blit(text_surface, rect)
 
+#Dibuja el numero de vidas del jugador en la pantalla.
 def drawLives():
     text_surface, rect = GAME_FONT.render("Vidas: " + str(lives), WHITE)
     rect.x = 0
@@ -92,6 +94,7 @@ def drawLives():
     SCR.blit(BACKGROUND, rect, rect)
     SCR.blit(text_surface, rect, )
 
+#Deja la pelota arriba del jugador, esperando al saque.
 def serve():
     global ball
     global player
@@ -99,6 +102,7 @@ def serve():
     ball.rect.midbottom = player.rect.midtop
     SCR.blit(ball.image, ball.rect) 
 
+#Texto de cuando el jugador pierde.
 def gameOver():
     text_surface, rect = GAME_FONT.render("GAME OVER", WHITE, size = 100)
     rect.centerx = WIDTH / 2
@@ -109,6 +113,7 @@ def gameOver():
     time.sleep(3)
     sys.exit()
 
+#Texto de cuando el jugador gana.
 def win():
     text_surface, rect = GAME_FONT.render("GANASTE", WHITE, size = 100)
     rect.centerx = WIDTH / 2
@@ -119,8 +124,9 @@ def win():
     time.sleep(3)
     sys.exit()
 
+#Rompe al ladrillo cuando algo le pega (pelota o power up de los tiros).
 def breakBrick(brk,proyectile):
-    brk.setResistance(brk.getResistance()-1)
+    brk.setResistance(brk.getResistance()-proyectile.strenght)
     #Esto que comente hace que el ladrillo se rompa cuando todavia tiene 2 de vida
     #if brk.resistance <= proyectile.strenght: # 3 3
         #brk.resistance = 0
@@ -129,12 +135,16 @@ def breakBrick(brk,proyectile):
         return brk.points
     else:
         return 0
+
+#Rebote vertical.
 def bounceV(brk, b):
     SCR.blit(BACKGROUND, b.rect, b.rect)
     b.invertVSpeed()
     b.move()
     SCR.blit(b.image, b.rect)
     SCR.blit(brk.image, brk.rect)
+
+#Rebote horizontal.
 def bounceH(brk, b):
     SCR.blit(BACKGROUND, b.rect, b.rect)
     b.invertHSpeed()
@@ -142,6 +152,7 @@ def bounceH(brk, b):
     SCR.blit(b.image, b.rect)
     SCR.blit(brk.image, brk.rect)
 
+#Agrega un power up al grupo de los power ups.
 def addPowerUp(points,powerUpGroup,brick,SCR):
     if points > 0:
                 SCR.blit(BACKGROUND, brick.rect, brick.rect)
@@ -150,7 +161,7 @@ def addPowerUp(points,powerUpGroup,brick,SCR):
                 if isinstance(brick, ld.ladrillo_p):
                     powerUpGroup.add([powerup.powerUp(brick.rect.x, brick.rect.y, brick.powerUp,brick.imagenPU)])
 
-
+#Cambia el color de los ladrillos segun la resistencia que le queda.
 def resistenceColor(brick,SCR):
     try:
         brick.resistanceColor()
@@ -159,6 +170,7 @@ def resistenceColor(brick,SCR):
     except Exception as e:
             pass
     
+#Verifica si un ladrillo es de la clase ladrillo flojo.
 def isFallingBrick(SCR,proyectile,brick):
     #Verifica si el ladrillo es de la clase ladrillo flojo
     if isinstance(brick, ld.fallingBrick):
@@ -167,16 +179,8 @@ def isFallingBrick(SCR,proyectile,brick):
         SCR.blit(proyectile.image,proyectile.rect)
 
 pygame.init()
+
 GAME_FONT = pygame.freetype.SysFont('roboto', 20, bold=False, italic=False)
-
-
-#TODO:
-    #Power Ups
-    #Otros ladrillos <--ball
-    #Mostrar Tiempo
-    #Pantalla de inicio
-    #Opcional Distintos niveles
-    #Buscar pygame.draw.rect() parece que evite todo el problema de blit
 
 SCR.blit(BACKGROUND, (0, 0))
 
@@ -208,6 +212,7 @@ playing = True
 shootPU = False
 
 SCR.blit(player.image, player.rect)
+
 #Bucle principal
 while playing:
 
@@ -232,6 +237,8 @@ while playing:
 
 
     joystick = pygame.key.get_pressed()
+
+    #Movimiento del jugador
     if joystick[pygame.K_LEFT]:
         SCR.blit(BACKGROUND, player.rect, player.rect)
         player.moveLeft(0)
@@ -240,6 +247,8 @@ while playing:
         SCR.blit(BACKGROUND, player.rect, player.rect)
         player.moveRight(WIDTH-10)
         SCR.blit(player.image, player.rect)
+    
+    #SAque del jugador. si el jugador saco, mueve la pelota
     if waitingServe == True:
         serve()
     else:
@@ -317,7 +326,7 @@ while playing:
             brickGroup.remove(brick)
             del brick
 
-
+    #tira los tiros
     if (shootPU or len(missileGroup)>0):
         try:        
             for m in missileGroup:    
@@ -325,12 +334,13 @@ while playing:
                 m.lauch() 
                 SCR.blit(m.image,m.rect)
                 if m.rect.y < 0 - m.rect.height - 40:
-                    missileGroup.remove(m)        
+                    missileGroup.remove(m)
+                    del m      
         except Exception as e:
            pass
 
     
-
+    #Choque de los tiros con los ladrillos
     for m in  missileGroup:   
         crashedBrick = pygame.sprite.spritecollideany(m, brickGroup)
         if crashedBrick:           
@@ -389,8 +399,7 @@ while playing:
     #Actualiza la pantalla
     pygame.display.flip()
 
-    #Actualiza la posicion de la pelota
-    
+    #condicion para ganar el juego
     if len(brickGroup) == 0:
         win()
         
