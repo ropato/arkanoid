@@ -58,7 +58,7 @@ def createBricks(amount,powerUps):
             del greenBrick
         elif brickType==2:
             num = rn.randrange(0,len(powerUps))
-            violetBrick = ld.ladrillo_p("resources/ladrilloVioleta.png",posWidth,posHeight, 1,2,POWERU_UP_LIST[num][0],POWERU_UP_LIST[num][1])
+            violetBrick = ld.ladrillo_p("resources/ladrilloVioleta.png",posWidth,posHeight, 1,2,POWER_SHOOT[0],POWER_SHOOT[1])
             brickGroup.add([violetBrick])
             del violetBrick
             del num
@@ -121,6 +121,7 @@ def win():
 
 def breakBrick(brk,proyectile):
     brk.setResistance(brk.getResistance()-1)
+    #Esto que comente hace que el ladrillo se rompa cuando todavia tiene 2 de vida
     #if brk.resistance <= proyectile.strenght: # 3 3
         #brk.resistance = 0
     if brk.resistance <= 0:
@@ -158,6 +159,12 @@ def resistenceColor(brick,SCR):
     except Exception as e:
             pass
     
+def isFallingBrick(SCR,proyectile,brick):
+    #Verifica si el ladrillo es de la clase ladrillo flojo
+    if isinstance(brick, ld.fallingBrick):
+        SCR.blit(BACKGROUND, proyectile.rect, proyectile.rect)
+        brick.setFalling(True)
+        SCR.blit(proyectile.image,proyectile.rect)
 
 pygame.init()
 GAME_FONT = pygame.freetype.SysFont('roboto', 20, bold=False, italic=False)
@@ -291,11 +298,8 @@ while playing:
             resistenceColor(brick,SCR)
             addPowerUp(points,powerUpGroup,brick,SCR)
 
-            #Verifica si el ladrillo es de la clase ladrillo flojo
-            if isinstance(brick, ld.fallingBrick):
-                SCR.blit(BACKGROUND, ball.rect, ball.rect)
-                brick.falling = True
-                SCR.blit(brick.image,brick.rect)
+            isFallingBrick(SCR,ball,brick)
+            
 
     #Ladrillo flojo. si se choco una vez, se cae. Si le pega al jugador le resta una vida.
     #Si el ladrillo se va por abajo del jugador sin pegarle se elimina
@@ -333,6 +337,7 @@ while playing:
                 points = breakBrick(crashedBrick,m)
                 addPowerUp(points,powerUpGroup,crashedBrick,SCR)
                 resistenceColor(crashedBrick,SCR)
+                isFallingBrick(SCR,m,crashedBrick)
                 if points > 0:
                     brickGroup.remove(crashedBrick)    
                 SCR.blit(BACKGROUND, crashedBrick.rect, crashedBrick.rect)

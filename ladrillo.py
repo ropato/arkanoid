@@ -55,5 +55,9 @@ class fallingBrick(Ladrillo):
         super().__init__(color, posX, posY, resistance, points)
         self.verticalSpeed = 3
         self.falling = False
+
     def fall(self):
         self.rect.y += self.verticalSpeed
+
+    def setFalling(self,bool:bool):
+        self.falling = bool
