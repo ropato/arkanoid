@@ -44,7 +44,7 @@ def createBricks(amount,powerUps):
     bricks = []
     #Genera los ladrillos
     for i in range(amount):
-        brickType =rn.randrange(0,5)
+        brickType =2#rn.randrange(0,5)
         if posWidth + ld.BRICK_SIZE[0] + BRICKS_DISTANCE  > WIDTH:
             posWidth = 20
             posHeight += ld.BRICK_SIZE[1] + 20    
@@ -178,6 +178,29 @@ def isFallingBrick(SCR,proyectile,brick):
         brick.setFalling(True)
         SCR.blit(proyectile.image,proyectile.rect)
 
+
+def multiBall(SCR,ballGroup,b,num):
+    if not len(ballGroup)>=3:
+        for i in range(num):
+            ballGroup.add(t.Pelota(b.rect.x,b.rect.y))
+    
+        for ball in ballGroup:
+            if i % 2 == 0:
+                ball.invertHSpeed()
+            else:
+                ball.invertVSpeed()
+            SCR.blit(BACKGROUND, ball.rect, ball.rect) 
+            updateBallPosition(SCR,ball)
+            SCR.blit(ball.image, ball.rect)
+    else: 
+        pass
+
+def updateBallPosition(SCR,ball):
+    SCR.blit(BACKGROUND, ball.rect, ball.rect)
+    ball.move()
+    SCR.blit(ball.image, ball.rect) 
+
+
 pygame.init()
 
 GAME_FONT = pygame.freetype.SysFont('roboto', 20, bold=False, italic=False)
@@ -265,49 +288,55 @@ while playing:
         #porque aveces la pelota se come un pedazo de la paleta
         SCR.blit(BACKGROUND, player.rect, player.rect)
         SCR.blit(player.image, player.rect)
-    if ball.rect.top <= 0 :
-        ball.invertVSpeed()
-    if ball.rect.left <= 1 or ball.rect.right >= WIDTH:
+
+
+    #Choque con limite de la pantalla
+    if ball.rect.top <= 0 - COLLISION_TOLARANCE :
+        ball.invertVSpeed()   
+    if ball.rect.left <= 0 or ball.rect.right >= WIDTH:
         ball.invertHSpeed()
 
-    #Rebote de la pelota con los ladrillos 
-    collisionedBricks = pygame.sprite.spritecollide(ball, brickGroup, False)
-    if len(collisionedBricks) > 0:
-        ball.bounce.play()  
-        for brick in collisionedBricks:
+
+    for ball in ballGroup:
+        #Rebote de la pelota con los ladrillos 
+        collisionedBricks = pygame.sprite.spritecollide(ball, brickGroup, False)
+        if len(collisionedBricks) > 0:
+            ball.bounce.play()  
+            for brick in collisionedBricks:
 
 
 
 
-            SCR.blit(brick.image, brick.rect)
-            if ball.strenght > 1:
-                ball.strenght-= brick.resistance
-                points = breakBrick(brick,ball)    
-                if ball.strenght <= 0:
-                    ball.strenght = 1
-                SCR.blit(BACKGROUND, ball.rect, ball.rect)
-                ball.move() 
-                SCR.blit(ball.image, ball.rect)
-                SCR.blit(BACKGROUND, brick.rect, brick.rect)
-            else:
-                #si pelota fuerza == 1
-                if abs(ball.rect.top - brick.rect.bottom) < COLLISION_TOLARANCE and ball.verticalSpeed < 0:
-                    bounceV(brick, ball)
-                    points = breakBrick(brick,ball)
-                if abs(ball.rect.bottom - brick.rect.top) < COLLISION_TOLARANCE and ball.verticalSpeed > 0:
-                    bounceV(brick, ball)
-                    points = breakBrick(brick,ball)
-                if abs(ball.rect.left - brick.rect.right) < COLLISION_TOLARANCE and ball.horizontalSpeed < 0:
-                    bounceH(brick, ball)
-                    points = breakBrick(brick,ball)
-                if abs(ball.rect.right - brick.rect.left) < COLLISION_TOLARANCE and ball.horizontalSpeed > 0:
-                    bounceH(brick, ball)
-                    points = breakBrick(brick,ball)
-        
-            resistenceColor(brick,SCR)
-            addPowerUp(points,powerUpGroup,brick,SCR)
+                SCR.blit(brick.image, brick.rect)
+                if ball.strenght > 1:
+                    ball.strenght-= brick.resistance
+                    points = breakBrick(brick,ball)    
+                    if ball.strenght <= 0:
+                        ball.strenght = 1
+                    SCR.blit(BACKGROUND, ball.rect, ball.rect)
+                    ball.move() 
+                    SCR.blit(ball.image, ball.rect)
+                    SCR.blit(BACKGROUND, brick.rect, brick.rect)
+                else:
+                    #si pelota fuerza == 1
+                    if abs(ball.rect.top - brick.rect.bottom) < COLLISION_TOLARANCE and ball.verticalSpeed < 0:
+                        bounceV(brick, ball)
+                        points = breakBrick(brick,ball)
+                    if abs(ball.rect.bottom - brick.rect.top) < COLLISION_TOLARANCE and ball.verticalSpeed > 0:
+                        bounceV(brick, ball)
+                        points = breakBrick(brick,ball)
+                    if abs(ball.rect.left - brick.rect.right) < COLLISION_TOLARANCE and ball.horizontalSpeed < 0:
+                        bounceH(brick, ball)
+                        points = breakBrick(brick,ball)
+                    if abs(ball.rect.right - brick.rect.left) < COLLISION_TOLARANCE and ball.horizontalSpeed > 0:
+                        bounceH(brick, ball)
+                        points = breakBrick(brick,ball)
+            
+                resistenceColor(brick,SCR)
+                addPowerUp(points,powerUpGroup,brick,SCR)
 
-            isFallingBrick(SCR,ball,brick)
+                isFallingBrick(SCR,ball,brick)
+                updateBallPosition(SCR,ball)
             
 
     #Ladrillo flojo. si se choco una vez, se cae. Si le pega al jugador le resta una vida.
@@ -383,14 +412,13 @@ while playing:
             elif powerUpColisioned[0].powerUp == POWER_SHOOT[0]:
                 player.setShoot(5)
                 shootPU = True
-            SCR.blit(BACKGROUND, powerUpColisioned[0], powerUpColisioned[0])
+                multiBall(SCR,ballGroup,ball,3)
+                updateBallPosition(SCR,ball)
+
+            SCR.blit(BACKGROUND, power, power)
             powerUpGroup.remove(power)
 
             
-    
-    if (ball.rect.left < 0 or ball.rect.top > HEIGHT):
-        print(ball.rect)
-        waitingServe = True
             
 
     drawScore()
