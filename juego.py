@@ -45,7 +45,7 @@ def createBricks(amount,powerUps):
     bricks = []
     #Genera los ladrillos
     for i in range(amount):
-        brickType =2#rn.randrange(0,5)
+        brickType =rn.randrange(0,5)
         if posWidth + ld.BRICK_SIZE[0] + BRICKS_DISTANCE  > WIDTH:
             posWidth = 20
             posHeight += ld.BRICK_SIZE[1] + 20    
