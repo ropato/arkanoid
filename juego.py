@@ -180,13 +180,11 @@ def isFallingBrick(SCR,proyectile,brick):
 def multiBall(SCR,ballGroup,b,num):
         for i in range(num):
             if not len(ballGroup)>=3:
-                ballGroup.add(t.Pelota(b.rect.x,b.rect.y))
-    
-        for ball in ballGroup:
-            ball.invertHSpeed()
-            SCR.blit(BACKGROUND, ball.rect, ball.rect) 
-            updateBallPosition(SCR,ball)
-            SCR.blit(ball.image, ball.rect)
+                if i % 2 == 0:
+                    ballGroup.add(t.Pelota((b.rect.x+b.rect.width),b.rect.y))
+                else:
+                    ballGroup.add(t.Pelota((b.rect.x-b.rect.width),b.rect.y))
+
 
 def updateBallPosition(SCR,ball):
     SCR.blit(BACKGROUND, ball.rect, ball.rect)
@@ -359,6 +357,8 @@ while playing:
            pass
 
     
+ 
+
     #Choque de los tiros con los ladrillos
     for m in  missileGroup:   
         crashedBrick = pygame.sprite.spritecollideany(m, brickGroup)
