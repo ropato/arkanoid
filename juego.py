@@ -8,6 +8,8 @@ import sys #
 import random as rn #generar numeros al azar
 import powerup
 import misil
+import flechitaSAque
+
 #Info del juego y Pantalla
 WIDTH = 1280 
 HEIGHT = 720
@@ -78,6 +80,11 @@ def createBricks(amount,powerUps):
 def addScore(pts,SCORE):
     SCORE += pts
 
+
+
+
+
+
 #Dibuja el puntaje en la pantalla.
 def drawScore():
     text_surface, rect = GAME_FONT.render("Puntaje: " + str(SCORE), WHITE)
@@ -99,6 +106,8 @@ def serve(player,ball):
     SCR.blit(BACKGROUND, ball.rect, ball.rect) 
     ball.rect.midbottom = player.rect.midtop
     SCR.blit(ball.image, ball.rect) 
+    ball.verticalSpeed = 0
+    ball.horizontalSpeed = 0
 
 #Texto de cuando el jugador pierde.
 def gameOver():
@@ -184,6 +193,17 @@ def multiBall(SCR,ballGroup,b,num):
                     ballGroup.add(t.Pelota((b.rect.x+b.rect.width),b.rect.y))
                 else:
                     ballGroup.add(t.Pelota((b.rect.x-b.rect.width),b.rect.y))
+        i = 0
+        for ball in ballGroup: 
+            ball.setSpeed(b.getSpeed()[0],b.getSpeed()[1])
+            i +=1
+            if i != 0:
+                if i % 2 == 0:
+                    ball.invertHSpeed()
+                if i % 2 != 0:
+                    ball.invertVSpeed()
+            
+
 
 
 def updateBallPosition(SCR,ball):
@@ -226,7 +246,8 @@ playing = True
 shootPU = False
 
 SCR.blit(player.image, player.rect)
-
+angle = 0
+flecha = flechitaSAque.FlechitaSaque(player.rect.centerx, player.rect.centery - ball.rect.height, 80, 10)
 #Bucle principal
 while playing:
 
@@ -240,15 +261,15 @@ while playing:
         #Eventos de apretar una tecla
         elif event.type == pygame.KEYDOWN:
             if (event.key == pygame.K_SPACE and waitingServe):
-                waitingServe = False
+                waitingServe = False     
+                ball.serve(flecha.angle)    
             elif (event.key == pygame.K_SPACE and not waitingServe and shootPU):
                 missile = misil.Misille(player.rect.centerx,player.rect.y)                
                 missileGroup.add([missile])
-                  
+                
                 player.setShoot(player.getShoot()-1)
                 if player.getShoot() == 0:
                     shootPU = False
-
 
     joystick = pygame.key.get_pressed()
 
@@ -264,8 +285,14 @@ while playing:
     
     #SAque del jugador. si el jugador saco, mueve la pelota
     if waitingServe == True:
+        joystick = pygame.key.get_pressed()
+        SCR.blit(BACKGROUND,(0,0))
+        SCR.blit(player.image,player.rect)
+        for brick in brickGroup:
+            SCR.blit(brick.image,brick.rect)
+        flecha.update(1,joystick)
+        flecha.draw(SCR,player.rect.centerx, player.rect.centery - ball.rect.height)
         serve(player,ball)
-
 
     for ball in ballGroup:
         #Choque con el jugador
@@ -289,8 +316,7 @@ while playing:
     for ball in ballGroup:
         updateBallPosition(SCR,ball)
 
-    for ball in ballGroup:
-        
+    for ball in ballGroup:  
         #Rebote de la pelota con los ladrillos 
         collisionedBricks = pygame.sprite.spritecollide(ball, brickGroup, False)
         if len(collisionedBricks) > 0:
@@ -435,8 +461,9 @@ while playing:
             if ball.rect.top > HEIGHT + 20:
                 if lives > 1:
                     lives -=1
-                    waitingServe = True
+                    waitingServe = True   
                     serve(player,ball)
+                    SCR.blit(BACKGROUND,flecha.rect,flecha.rect)
                 else:
                     gameOver()
         
