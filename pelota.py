@@ -18,7 +18,8 @@ class Pelota(pygame.sprite.Sprite):
 
     def getSpeed(self):
         return self.horizontalSpeed,self.verticalSpeed
-    def setSpeed(self,vSpeed,Hspeed):
+    
+    def setSpeed(self,Hspeed,vSpeed):
         self.verticalSpeed = Hspeed
         self.horizontalSpeed = vSpeed
 
@@ -27,6 +28,7 @@ class Pelota(pygame.sprite.Sprite):
 
     def invertVSpeed(self):
         self.verticalSpeed*= -1
+        
     def invertHSpeed(self):
         self.horizontalSpeed*= -1
 

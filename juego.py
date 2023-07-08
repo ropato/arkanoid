@@ -250,7 +250,6 @@ angle = 0
 flecha = flechitaSAque.FlechitaSaque(player.rect.centerx, player.rect.centery - ball.rect.height, 80, 10)
 #Bucle principal
 while playing:
-
     #Eventos del juego
     for event in pygame.event.get():
         #Cierra el juego con la cruz
@@ -309,7 +308,7 @@ while playing:
     for ball in ballGroup:
         #Choque con limite de la pantalla
         if ball.rect.top <= 0 - COLLISION_TOLARANCE :
-            ball.invertVSpeed()   
+            ball.invertVSpeed()
         if ball.rect.left <= 0 or ball.rect.right >= WIDTH:
             ball.invertHSpeed()
 
@@ -383,7 +382,6 @@ while playing:
            pass
 
     
- 
 
     #Choque de los tiros con los ladrillos
     for m in  missileGroup:   
@@ -429,8 +427,11 @@ while playing:
                 player.setShoot(5)
                 shootPU = True
             elif powerUpColisioned[0].powerUp == POWER_MULTIBALL[0]:
-                multiBall(SCR,ballGroup,ball,3)
-                updateBallPosition(SCR,ball)
+                if not waitingServe:
+                    multiBall(SCR,ballGroup,ball,3)
+                    updateBallPosition(SCR,ball)
+                else:
+                    pass
 
             SCR.blit(BACKGROUND, power, power)
             powerUpGroup.remove(power)
