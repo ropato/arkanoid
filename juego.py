@@ -296,13 +296,17 @@ while playing:
     for ball in ballGroup:
         #Choque con el jugador
         if pygame.sprite.spritecollideany(ball, playerGroup):
-            SCR.blit(BACKGROUND, ball.rect, ball.rect)
-            ball.invertVSpeed()
-            updateBallPosition(SCR,ball)
-            SCR.blit(ball.image, ball.rect)
-            #porque aveces la pelota se come un pedazo de la paleta
-            SCR.blit(BACKGROUND, player.rect, player.rect)
-            SCR.blit(player.image, player.rect)
+            if abs(ball.rect.top - player.rect.bottom) < COLLISION_TOLARANCE and ball.verticalSpeed < 0:
+                bounceV(player, ball)
+
+            if abs(ball.rect.bottom - player.rect.top) < COLLISION_TOLARANCE and ball.verticalSpeed > 0:
+                bounceV(player, ball)
+
+            if abs(ball.rect.left - player.rect.right) < COLLISION_TOLARANCE and ball.horizontalSpeed < 0:
+                bounceH(player, ball)
+
+            if abs(ball.rect.right - player.rect.left) < COLLISION_TOLARANCE and ball.horizontalSpeed > 0:
+                bounceH(player, ball)
 
 
     for ball in ballGroup:
